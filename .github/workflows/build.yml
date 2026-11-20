@@ -1,0 +1,325 @@
+name: Build packages
+
+run-name: "Build ${{ inputs.torrserver_tag || github.ref_name }} (OpenWrt ${{ inputs.openwrt_version || 'both' }}${{ inputs.targets != '' && inputs.targets != 'all' && format(', only: {0}', inputs.targets) || '' }})"
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - 'archive/**'
+      - 'README.md'
+      - 'LICENSE'
+    tags:
+      - 'MatriX.*'
+      - 'Silo.*'
+      - '[0-9]*'
+  workflow_dispatch:
+    inputs:
+      openwrt_version:
+        description: 'both = ipk(24.10.8) + apk(25.12.6); или одна версия: 23.05.6, 24.10.8, 25.12.6, snapshot'
+        required: true
+        default: 'both'
+        type: string
+      targets:
+        description: 'Архитектуры через пробел, например: all / x86_64 aarch64_generic aarch64_cortex-a53 mipsel_24kc / riscv64. Пусто или all = все.'
+        required: false
+        default: 'all'
+        type: string
+      torrserver_tag:
+        description: 'latest = новейший MatriX; или тег, например: MatriX.150, Silo.2, 1.1.77; пусто = из Makefile'
+        required: false
+        default: 'latest'
+        type: string
+      pkg_version:
+        description: 'Версия пакета (цифры/точки). Пусто = вычислить из тега'
+        required: false
+        default: ''
+        type: string
+      pkg_release:
+        description: 'PKG_RELEASE — ревизия упаковки. Пусто = из Makefile'
+        required: false
+        default: ''
+        type: string
+      build_luci:
+        description: 'Собирать luci-app-torrserver (выключите для теста только бинарника)'
+        required: false
+        default: true
+        type: boolean
+      skip_release:
+        description: 'Не публиковать релиз, даже если запуск с тега'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.gen.outputs.matrix }}
+      ts_tag: ${{ steps.ver.outputs.ts_tag }}
+      pkg_version: ${{ steps.ver.outputs.pkg_version }}
+      pkg_release: ${{ steps.ver.outputs.pkg_release }}
+      build_luci: ${{ steps.ver.outputs.build_luci }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Resolve TorrServer version
+        id: ver
+        env:
+          IN_TAG: ${{ inputs.torrserver_tag }}
+          IN_VER: ${{ inputs.pkg_version }}
+          IN_REL: ${{ inputs.pkg_release }}
+          IN_LUCI: ${{ inputs.build_luci }}
+          REF: ${{ github.ref }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -eu
+          MK=package/torrserver/Makefile
+          getvar() { grep -E "^$1[[:space:]]*[:?]?=" "$MK" | head -n1 | sed 's/.*=[[:space:]]*//'; }
+
+          TAG="$IN_TAG"
+          if [ -z "$TAG" ]; then
+            case "$REF" in
+              refs/tags/*) TAG="$REF_NAME" ;;
+              *)           TAG="$(getvar TS_TAG_DEF)" ;;
+            esac
+          fi
+
+          # Авто-поиск новейшего тега апстрима
+          case "$TAG" in
+            latest|latest-matrix) PAT='MatriX.*' ;;
+            latest-silo)          PAT='Silo.*' ;;
+            *)                    PAT='' ;;
+          esac
+          if [ -n "$PAT" ]; then
+            TAG="$(git ls-remote --tags https://github.com/YouROK/TorrServer.git "refs/tags/$PAT" \
+                   | sed 's#.*refs/tags/##' | grep -v '\^{}$' | sort -V | tail -n1)"
+            [ -n "$TAG" ] || { echo "::error::Не найдено тегов $PAT"; exit 1; }
+            echo "Новейший тег апстрима: $TAG"
+          fi
+
+          VER="$IN_VER"
+          if [ -z "$VER" ]; then
+            case "$TAG" in
+              MatriX.*) VER="${TAG#MatriX.}" ;;
+              Silo.*)   VER="200.${TAG#Silo.}" ;;
+              [0-9]*)   VER="$TAG" ;;
+              *) echo "::error::Неизвестный формат тега: $TAG"; exit 1 ;;
+            esac
+          fi
+          case "$VER" in ''|*[!0-9.]*) echo "::error::Версия пакета должна быть числовой: '$VER'"; exit 1 ;; esac
+
+          REL="${IN_REL:-$(getvar PKG_RELEASE_DEF)}"
+          case "$REL" in ''|*[!0-9]*) echo "::error::PKG_RELEASE должен быть числом: '$REL'"; exit 1 ;; esac
+          case "$TAG" in *[!0-9A-Za-z._-]*) echo "::error::Подозрительный тег: $TAG"; exit 1 ;; esac
+
+          {
+            echo "ts_tag=$TAG"
+            echo "pkg_version=$VER"
+            echo "pkg_release=$REL"
+            echo "build_luci=${IN_LUCI}"
+          } >> "$GITHUB_OUTPUT"
+          echo "TorrServer: $TAG  ->  пакет ${VER}-r${REL}  (luci=${IN_LUCI})"
+
+      - name: Generate matrix
+        id: gen
+        env:
+          OWRT_INPUT: ${{ inputs.openwrt_version || 'both' }}
+          TARGETS_INPUT: ${{ inputs.targets || 'all' }}
+        run: |
+          set -eu
+          case "$OWRT_INPUT" in
+            both) VERSIONS="24.10.8 25.12.6" ;;
+            *)    VERSIONS="$OWRT_INPUT" ;;
+          esac
+          for v in $VERSIONS; do
+            case "$v" in
+              *[!0-9a-z.-]*) echo "::error::Подозрительная версия OpenWrt: $v"; exit 1 ;;
+            esac
+          done
+
+          # Полный список архитектур. Метки должны совпадать со вторым элементом пары!
+          ALL_TARGETS="x86/64:x86_64 armsr/armv8:aarch64_generic mvebu/cortexa53:aarch64_cortex-a53 sifiveu/generic:riscv64 ramips/mt7621:mipsel_24kc"
+
+          if [ "$TARGETS_INPUT" = "all" ] || [ -z "$TARGETS_INPUT" ]; then
+            TARGETS="$ALL_TARGETS"
+          else
+            TARGETS=""
+            for wanted in $TARGETS_INPUT; do
+              case "$wanted" in *[!0-9A-Za-z._-]*) echo "::error::Подозрительная архитектура: $wanted"; exit 1 ;; esac
+              match=""
+              for t in $ALL_TARGETS; do
+                if [ "${t##*:}" = "$wanted" ]; then match="$t"; break; fi
+              done
+              [ -n "$match" ] || { echo "::error::Неизвестная архитектура: $wanted (допустимы: x86_64, aarch64_generic, aarch64_cortex-a53, mipsel_24kc, riscv64)"; exit 1; }
+              TARGETS="$TARGETS $match"
+            done
+            TARGETS="${TARGETS# }"
+          fi
+
+          JSON='{"include":['
+          first=1
+          for v in $VERSIONS; do
+            for t in $TARGETS; do
+              [ "$first" -eq 1 ] || JSON="$JSON,"
+              first=0
+              JSON="$JSON{\"owrt\":\"$v\",\"target\":\"${t%%:*}\",\"arch\":\"${t##*:}\"}"
+            done
+          done
+          JSON="$JSON]}"
+          echo "matrix=$JSON" >> "$GITHUB_OUTPUT"
+          echo "Матрица: $JSON"
+
+  build:
+    needs: setup
+    runs-on: ubuntu-latest
+    env:
+      TS_VERSION_TAG: ${{ needs.setup.outputs.ts_tag }}
+      TS_PKG_VERSION: ${{ needs.setup.outputs.pkg_version }}
+      TS_PKG_RELEASE: ${{ needs.setup.outputs.pkg_release }}
+      BUILD_LUCI: ${{ needs.setup.outputs.build_luci }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.setup.outputs.matrix) }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential git python3 python3-setuptools rsync wget file zstd
+
+      - name: Install UPX
+        run: |
+          curl -fL --retry 3 -o upx.tar.xz \
+            https://github.com/upx/upx/releases/download/v5.3.0/upx-5.3.0-amd64_linux.tar.xz
+          tar -xf upx.tar.xz
+          sudo install -m 0755 upx-5.3.0-amd64_linux/upx /usr/local/bin/upx
+          upx --version
+
+      - name: Download SDK
+        run: |
+          set -eu
+          VER="${{ matrix.owrt }}"
+          TARGET="${{ matrix.target }}"
+          if [ "$VER" = "snapshot" ]; then
+            BASE_URL="https://downloads.openwrt.org/snapshots/targets/${TARGET}"
+          else
+            BASE_URL="https://downloads.openwrt.org/releases/${VER}/targets/${TARGET}"
+          fi
+          curl -fsSL "${BASE_URL}/sha256sums" -o sha256sums
+          SDK_FILE="$(grep -oE 'openwrt-sdk-[^[:space:]]+Linux-x86_64\.tar\.(zst|xz)' sha256sums | head -n1)"
+          if [ -z "${SDK_FILE}" ]; then
+            echo "::error::SDK не найден в ${BASE_URL} — проверьте версию и target"
+            exit 1
+          fi
+          echo "Выбран SDK: ${SDK_FILE}"
+          curl -fL --retry 3 -O "${BASE_URL}/${SDK_FILE}"
+          grep -F "${SDK_FILE}" sha256sums | sha256sum -c -
+          tar -xf "${SDK_FILE}"
+          echo "SDK_DIR=${SDK_FILE%.tar.*}" >> "$GITHUB_ENV"
+
+      - name: Fetch TorrServer source
+        run: |
+          set -eu
+          cd "${SDK_DIR}"
+          mkdir -p dl
+          echo "Качаем исходники TorrServer ${TS_VERSION_TAG}"
+          curl -fL --retry 3 -o "dl/${TS_VERSION_TAG}.tar.gz" \
+            "https://github.com/YouROK/TorrServer/archive/refs/tags/${TS_VERSION_TAG}.tar.gz"
+          tar -tzf "dl/${TS_VERSION_TAG}.tar.gz" > /dev/null
+          H="$(sha256sum "dl/${TS_VERSION_TAG}.tar.gz" | cut -d' ' -f1)"
+          echo "TS_HASH=${H}" >> "$GITHUB_ENV"
+          echo "sha256: ${H}"
+
+      - name: Build packages
+        run: |
+          set -eu
+          cd "${SDK_DIR}"
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+          cp -r ../package/torrserver package/
+          if [ "$BUILD_LUCI" = "true" ]; then
+            cp -r ../package/luci-app-torrserver package/
+          fi
+
+          {
+            echo "CONFIG_PACKAGE_torrserver=m"
+            echo "CONFIG_PACKAGE_torrserver-upx=m"
+            if [ "$BUILD_LUCI" = "true" ]; then
+              echo "CONFIG_PACKAGE_luci-app-torrserver=m"
+            fi
+          } >> .config
+
+          make defconfig
+
+          make -j"$(nproc)" package/torrserver/compile V=s
+          if [ "$BUILD_LUCI" = "true" ]; then
+            make -j"$(nproc)" package/luci-app-torrserver/compile V=s
+          fi
+
+          echo "=== Build artifacts ==="
+          mkdir -p ../pkg-out
+          find bin/packages -type f \( -name '*.ipk' -o -name '*.apk' \) \
+            \( -name 'torrserver[_-]*' \
+               -o -name 'luci-app-torrserver[_-]*' \
+               -o -name 'luci-i18n-torrserver-*' \) \
+            -exec cp -v {} ../pkg-out/ \;
+          ls -lh ../pkg-out
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: torrserver-${{ needs.setup.outputs.ts_tag }}-owrt${{ matrix.owrt }}-${{ matrix.arch }}
+          if-no-files-found: error
+          path: pkg-out/*
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/') && !inputs.skip_release
+    permissions:
+      contents: write
+      actions: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v8.0.2
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Prepare release files
+        run: |
+          mkdir -p release
+          find artifacts \( -name '*.ipk' -o -name '*.apk' \) | sort -u | while read -r file; do
+            cp -v "$file" release/
+          done
+          echo "=== Release files ==="
+          ls -lh release/
+          echo "=== Summary ==="
+          echo "Total packages: $(find release -type f | wc -l)"
+          echo "ipk: $(find release -name '*.ipk' | wc -l)"
+          echo "apk: $(find release -name '*.apk' | wc -l)"
+
+      - name: Create or Update Release
+        run: |
+          if gh release view "$TAG_NAME" >/dev/null 2>&1; then
+            echo "Релиз уже существует. Загружаем собранные пакеты в него..."
+            gh release upload "$TAG_NAME" release/* --clobber
+          else
+            echo "Релиз не найден. Создаем новый и загружаем пакеты..."
+            gh release create "$TAG_NAME" --title "TorrServer $TAG_NAME" --generate-notes release/*
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ github.ref_name }}

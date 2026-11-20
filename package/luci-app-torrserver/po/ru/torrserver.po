@@ -1,0 +1,2532 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: luci-app-torrserver\n"
+"PO-Revision-Date: 2026-08-25 12:00+0300\n"
+"Last-Translator: YouROk\n"
+"Language-Team: Russian\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+
+
+msgid "TorrServer"
+msgstr "TorrServer"
+
+msgid "TorrServer is a torrent stream server that allows you to watch torrents online without downloading them first. This page lets you configure the service, manage its settings, and monitor its status."
+msgstr "TorrServer — сервер потоковой передачи торрентов, который позволяет смотреть торренты онлайн без их предварительной загрузки. На этой странице можно настроить сервис, управлять его параметрами и отслеживать состояние."
+
+msgid "N/A"
+msgstr "Н/Д"
+
+msgid "Unknown"
+msgstr "Неизвестно"
+
+msgid "d"
+msgstr "д"
+
+msgid "h"
+msgstr "ч"
+
+msgid "m"
+msgstr "мин"
+
+msgid "s"
+msgstr "сек"
+
+msgid "MB"
+msgstr "МБ"
+
+msgid "KB"
+msgstr "КБ"
+
+# ============================================================
+# ВАЛИДАТОРЫ
+# ============================================================
+
+msgid "Must be a whole number (0 or more)"
+msgstr "Должно быть целое число (0 или больше)"
+
+msgid "Must be http://, https://, socks4://, socks5:// or socks5h:// URL"
+msgstr "Должен быть URL вида http://, https://, socks4://, socks5:// или socks5h://"
+
+msgid "Format: [IP]:PORT, e.g. :32000 or 127.0.0.1:32768"
+msgstr "Формат: [IP]:ПОРТ, например :32000 или 127.0.0.1:32768"
+
+msgid "Invalid token format. Expected: 123456789:ABCdefGHI…"
+msgstr "Неверный формат токена. Ожидается: 123456789:ABCdefGHI…"
+
+msgid "Invalid token format. Expected format: 123456789:ABCdefGHIjklMNOpqrSTUvwxYZ"
+msgstr "Неверный формат токена. Ожидаемый формат: 123456789:ABCdefGHIjklMNOpqrSTUvwxYZ"
+
+msgid "Absolute path with .pem, .crt, .cer, .key, .der, .p12 or .pfx extension required"
+msgstr "Требуется абсолютный путь с расширением .pem, .crt, .cer, .key, .der, .p12 или .pfx"
+
+msgid "Must be an absolute path (starting with /)"
+msgstr "Должен быть абсолютный путь (начинающийся с /)"
+
+msgid "Line "
+msgstr "Строка "
+
+msgid ": invalid IP range format. Use: IP-IP or just IP"
+msgstr ": неверный формат диапазона IP. Используйте: IP-IP или просто IP"
+
+msgid ": invalid IP address format"
+msgstr ": неверный формат IP-адреса"
+
+# ============================================================
+# ПОИСК ТОРРЕНТОВ
+# ============================================================
+
+msgid "Search torrents from Rutor and Torznab sources:"
+msgstr "Поиск торрентов из источников Rutor и Torznab:"
+
+msgid "Enter search query…"
+msgstr "Введите поисковый запрос…"
+
+msgid "Please enter a search query"
+msgstr "Пожалуйста, введите поисковый запрос"
+
+msgid "Searching…"
+msgstr "Поиск…"
+
+msgid "No results found."
+msgstr "Результаты не найдены."
+
+msgid "Title"
+msgstr "Название"
+
+msgid "Size"
+msgstr "Размер"
+
+msgid "Seeds"
+msgstr "Сиды"
+
+msgid "Peers"
+msgstr "Пиры"
+
+msgid "Actions"
+msgstr "Действия"
+
+msgid "Torrent added successfully!"
+msgstr "Торрент успешно добавлен!"
+
+msgid "Failed to add torrent:"
+msgstr "Не удалось добавить торрент:"
+
+msgid "Search failed:"
+msgstr "Ошибка поиска:"
+
+msgid "Search"
+msgstr "Поиск"
+
+msgid "Search Torrents"
+msgstr "Поиск торрентов"
+
+# ============================================================
+# НАСТРОЙКИ ХРАНИЛИЩА (STORAGE SETTINGS)
+# ============================================================
+
+msgid "TorrServer allows you to choose between different storage types for settings and viewing history. These settings are configured in the TorrServer web interface under"
+msgstr "TorrServer позволяет выбирать между различными типами хранилища для настроек и истории просмотров. Эти параметры настраиваются в веб-интерфейсе TorrServer в разделе"
+
+msgid "Settings → PRO Mode → Storage"
+msgstr "Settings → PRO Mode → Storage"
+
+msgid "Settings Storage:"
+msgstr "Хранилище настроек:"
+
+msgid "JSON file (settings.json) or BBolt database (config.db)."
+msgstr "JSON-файл (settings.json) или база данных BBolt (config.db)."
+
+msgid "JSON is easier to edit/backup, BBolt is more reliable."
+msgstr "JSON проще редактировать/делать резервные копии, BBolt — надёжнее."
+
+msgid "Viewing History Storage:"
+msgstr "Хранилище истории просмотров:"
+
+msgid "BBolt database (config.db) or JSON file (viewed.json)."
+msgstr "База данных BBolt (config.db) или JSON-файл (viewed.json)."
+
+msgid "JSON (easier to edit)"
+msgstr "JSON (проще редактировать)"
+
+msgid "BBolt (more reliable)"
+msgstr "BBolt (надёжнее)"
+
+msgid "JSON"
+msgstr "JSON"
+
+msgid "BBolt"
+msgstr "BBolt"
+
+msgid "Settings Storage Type"
+msgstr "Тип хранилища настроек"
+
+msgid "Viewed History Storage Type"
+msgstr "Тип хранилища истории просмотров"
+
+msgid "Warning:"
+msgstr "Предупреждение:"
+
+msgid "Changing storage type requires TorrServer restart. Existing data in the old storage format will not be automatically migrated."
+msgstr "Смена типа хранилища требует перезапуска TorrServer. Существующие данные в старом формате не будут автоматически мигрированы."
+
+msgid "Save"
+msgstr "Сохранить"
+
+msgid "Cancel"
+msgstr "Отмена"
+
+msgid "Storage settings updated! Please restart TorrServer to apply changes."
+msgstr "Настройки хранилища обновлены! Перезапустите TorrServer для применения изменений."
+
+msgid "Failed to update storage settings:"
+msgstr "Не удалось обновить настройки хранилища:"
+
+msgid "Storage Settings"
+msgstr "Настройки хранилища"
+
+msgid "Failed to load storage settings:"
+msgstr "Не удалось загрузить настройки хранилища:"
+
+# ============================================================
+# TMDB
+# ============================================================
+
+msgid "TMDB is used to fetch movie posters and metadata. Get your API key at themoviedb.org"
+msgstr "TMDB используется для получения постеров и метаданных фильмов. Получите API-ключ на themoviedb.org"
+
+msgid "API Key:"
+msgstr "API-ключ:"
+
+msgid "Not set"
+msgstr "Не задан"
+
+msgid "API URL:"
+msgstr "URL API:"
+
+msgid "Image URL:"
+msgstr "URL изображений:"
+
+msgid "Image URL (RU):"
+msgstr "URL изображений (RU):"
+
+msgid "TMDB Settings"
+msgstr "Настройки TMDB"
+
+msgid "Failed to load TMDB settings:"
+msgstr "Не удалось загрузить настройки TMDB:"
+
+msgid "TMDB"
+msgstr "TMDB"
+
+# ============================================================
+# GSTREAMER
+# ============================================================
+
+msgid "GStreamer is not built into this TorrServer build. This feature is only available in -gst builds."
+msgstr "GStreamer не встроен в эту сборку TorrServer. Эта функция доступна только в сборках с суффиксом -gst."
+
+msgid "GStreamer is available and built-in."
+msgstr "GStreamer доступен и встроен."
+
+msgid "Performance Warning:"
+msgstr "Предупреждение о производительности:"
+
+msgid "GStreamer enables real-time video transcoding, allowing playback of incompatible formats (MKV, HEVC, etc.) in browsers and DLNA players. However, transcoding is extremely CPU-intensive. Most routers have weak processors (single/dual-core ARM at 800MHz-1.5GHz) and limited RAM (128-512MB), which are insufficient for smooth HD/4K transcoding. Expect stuttering, buffering, or crashes when transcoding high-resolution video. For best performance, use direct playback (no transcoding) or external media players (VLC, Kodi) via M3U playlists."
+msgstr "GStreamer включает транскодирование видео в реальном времени, позволяя воспроизводить несовместимые форматы (MKV, HEVC и т.д.) в браузерах и DLNA-плеерах. Однако транскодирование крайне ресурсоёмко. Большинство роутеров имеют слабые процессоры (одно/двухъядерные ARM на 800МГц-1.5ГГц) и ограниченный объём ОЗУ (128-512МБ), которых недостаточно для плавного транскодирования HD/4K видео. Ожидайте заикания, буферизации или сбоев при транскодировании видео высокого разрешения. Для наилучшей производительности используйте прямое воспроизведение (без транскодирования) или внешние медиаплееры (VLC, Kodi) через M3U-плейлисты."
+
+msgid "Current Configuration"
+msgstr "Текущая конфигурация"
+
+msgid "Show Defaults"
+msgstr "Показать значения по умолчанию"
+
+msgid "GStreamer Settings"
+msgstr "Настройки GStreamer"
+
+msgid "GStreamer"
+msgstr "GStreamer"
+
+msgid "Failed to load GStreamer settings:"
+msgstr "Не удалось загрузить настройки GStreamer:"
+
+# ============================================================
+# ТЕСТ СКОРОСТИ
+# ============================================================
+
+msgid "This test measures the speed of your local network between the router and your current device. It does NOT measure your internet speed or torrent download speed from external sources."
+msgstr "Этот тест измеряет скорость вашей локальной сети между роутером и вашим текущим устройством. Он НЕ измеряет скорость вашего интернета или скорость загрузки торрентов из внешних источников."
+
+msgid "Download a test file to measure your connection speed:"
+msgstr "Загрузите тестовый файл, чтобы измерить скорость соединения:"
+
+msgid "Start Test"
+msgstr "Начать тест"
+
+msgid "Testing…"
+msgstr "Тестирование…"
+
+msgid "Please enter a valid size (1-1000 MB)"
+msgstr "Введите допустимый размер (1-1000 МБ)"
+
+msgid "Test completed!"
+msgstr "Тест завершён!"
+
+msgid "Downloaded:"
+msgstr "Загружено:"
+
+msgid "Duration:"
+msgstr "Длительность:"
+
+msgid "Average speed:"
+msgstr "Средняя скорость:"
+
+msgid "This is your local network speed between router and this device."
+msgstr "Это скорость вашей локальной сети между роутером и этим устройством."
+
+msgid "Speed test failed:"
+msgstr "Ошибка теста скорости:"
+
+msgid "Speed Test"
+msgstr "Тест скорости"
+
+msgid "Downloading…"
+msgstr "Загрузка…"
+
+msgid "Current speed:"
+msgstr "Текущая скорость:"
+
+# ============================================================
+# ВИДЕО ПЛЕЕР / FFPROBE
+# ============================================================
+
+msgid "File Probe Info"
+msgstr "Данные ffprobe"
+
+msgid "Failed to get file info:"
+msgstr "Не удалось получить информацию о файле:"
+
+msgid "Video Player"
+msgstr "Видеоплеер"
+
+msgid "Browser support depends on container and codecs. MP4 (H.264+AAC) works in all browsers. WebM works in Chrome, Firefox, Edge. MKV plays only in Chrome/Edge with supported codecs (H.264+AAC, VP8/VP9). AVI, WMV, FLV are not supported by any browser — use VLC or Kodi via M3U playlist, or open the stream link in a media player."
+msgstr "Поддержка браузером зависит от контейнера и кодеков. MP4 (H.264+AAC) работает во всех браузерах. WebM работает в Chrome, Firefox, Edge. MKV воспроизводится только в Chrome/Edge с поддерживаемыми кодеками (H.264+AAC, VP8/VP9). AVI, WMV, FLV не поддерживаются ни одним браузером — используйте VLC или Kodi через M3U-плейлист, или откройте ссылку на поток в медиаплеере."
+
+msgid "If video does not play, try the"
+msgstr "Если видео не воспроизводится, попробуйте"
+
+msgid "direct video stream link"
+msgstr "прямую ссылку на видеопоток"
+
+msgid "Play in Browser"
+msgstr "Воспроизвести в браузере"
+
+# ============================================================
+# СТАТИСТИКА СЕРВЕРА
+# ============================================================
+
+msgid "TorrServer Statistics"
+msgstr "Статистика TorrServer"
+
+msgid "Failed to get statistics:"
+msgstr "Не удалось получить статистику:"
+
+# ============================================================
+# МЕНЕДЖЕР ТОРРЕНТОВ
+# ============================================================
+
+msgid "Add by Link"
+msgstr "Добавить по ссылке"
+
+msgid "Upload .torrent"
+msgstr "Загрузить .torrent"
+
+msgid "Wipe All"
+msgstr "Удалить все"
+
+msgid "Torrent Manager"
+msgstr "Менеджер торрентов"
+
+msgid "Close"
+msgstr "Закрыть"
+
+msgid "Loading…"
+msgstr "Загрузка…"
+
+msgid "No torrents added yet."
+msgstr "Торренты ещё не добавлены."
+
+msgid "Category"
+msgstr "Категория"
+
+msgid "Status"
+msgstr "Статус"
+
+msgid "Files"
+msgstr "Файлы"
+
+msgid "View"
+msgstr "Просмотр"
+
+msgid "Edit"
+msgstr "Изменить"
+
+msgid "Remove"
+msgstr "Удалить"
+
+msgid "Failed to load torrents:"
+msgstr "Не удалось загрузить торренты:"
+
+# ============================================================
+# РЕДАКТОР IP-СПИСКОВ
+# ============================================================
+
+msgid "Failed to read file: "
+msgstr "Не удалось прочитать файл: "
+
+msgid "Whitelist has priority! If non-empty, only listed IPs can access TorrServer."
+msgstr "Белый список имеет приоритет! Если он не пуст, доступ к TorrServer имеют ТОЛЬКО указанные IP."
+
+msgid "Blacklisted IPs are blocked from accessing TorrServer."
+msgstr "IP из чёрного списка блокируются при доступе к TorrServer."
+
+msgid "Restart TorrServer to apply changes."
+msgstr "Перезапустите TorrServer для применения изменений."
+
+msgid "Comment text"
+msgstr "Текст комментария"
+
+msgid "Description"
+msgstr "Описание"
+
+msgid "IP address"
+msgstr "IP-адрес"
+
+msgid "End IP (range)"
+msgstr "Конечный IP (диапазон)"
+
+msgid "Format:"
+msgstr "Формат:"
+
+msgid "Leave \"End IP\" empty for a single IP address. Yellow rows are comments."
+msgstr "Оставьте \"Конечный IP\" пустым для одиночного IP-адреса. Жёлтые строки — это комментарии."
+
+msgid "Add Rule"
+msgstr "Добавить правило"
+
+msgid "Add Comment"
+msgstr "Добавить комментарий"
+
+msgid "Row %d: invalid IP address \"%s\"."
+msgstr "Строка %d: неверный IP-адрес \"%s\"."
+
+msgid "Row %d: invalid end IP address \"%s\"."
+msgstr "Строка %d: неверный конечный IP-адрес \"%s\"."
+
+msgid "Validation errors:"
+msgstr "Ошибки валидации:"
+
+msgid "File saved successfully!"
+msgstr "Файл успешно сохранён!"
+
+msgid "Save error: "
+msgstr "Ошибка сохранения: "
+
+msgid "Failed to save: "
+msgstr "Не удалось сохранить: "
+
+msgid "Failed to load file: "
+msgstr "Не удалось загрузить файл: "
+
+msgid "Edit Whitelist (wip.txt)"
+msgstr "Редактирование белого списка (wip.txt)"
+
+msgid "Edit Blacklist (bip.txt)"
+msgstr "Редактирование чёрного списка (bip.txt)"
+
+# ============================================================
+# HTTP АУТЕНТИФИКАЦИЯ
+# ============================================================
+
+msgid "Failed to read accs.db: "
+msgstr "Не удалось прочитать accs.db: "
+
+msgid "Manage HTTP authentication credentials. Each row is a user account."
+msgstr "Управление учётными данными HTTP-аутентификации. Каждая строка — это учётная запись пользователя."
+
+msgid "Security Warning:"
+msgstr "Предупреждение о безопасности:"
+
+msgid "Credentials are stored in plain text JSON format. Anyone with file access can read your passwords. File permissions are set to 600 automatically."
+msgstr "Учётные данные хранятся в открытом JSON-формате. Любой, кто имеет доступ к файлу, может прочитать ваши пароли. Права доступа к файлу автоматически устанавливаются в 600."
+
+msgid "User Accounts"
+msgstr "Учётные записи пользователей"
+
+msgid "Username"
+msgstr "Имя пользователя"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Add User"
+msgstr "Добавить пользователя"
+
+msgid "Row %d: username is empty."
+msgstr "Строка %d: имя пользователя пусто."
+
+msgid "Row %d: password for user \"%s\" is empty."
+msgstr "Строка %d: пароль для пользователя \"%s\" пуст."
+
+msgid "Row %d: duplicate username \"%s\"."
+msgstr "Строка %d: дублирование имени пользователя \"%s\"."
+
+msgid "You are about to remove all credentials. HTTP authentication will still be enabled, but with no valid users. Continue?"
+msgstr "Вы собираетесь удалить все учётные данные. HTTP-аутентификация останется включённой, но без действительных пользователей. Продолжить?"
+
+msgid "Authentication credentials saved successfully!"
+msgstr "Учётные данные аутентификации успешно сохранены!"
+
+msgid "Failed to save accs.db: "
+msgstr "Не удалось сохранить accs.db: "
+
+msgid "Failed to load accs.db: "
+msgstr "Не удалось загрузить accs.db: "
+
+msgid "HTTP Authentication Credentials"
+msgstr "Учётные данные HTTP-аутентификации"
+
+msgid "Failed to parse accs.db: "
+msgstr "Не удалось разобрать accs.db: "
+
+# ============================================================
+# TELEGRAM БОТ
+# ============================================================
+
+msgid "Failed to read tg.cfg: "
+msgstr "Не удалось прочитать tg.cfg: "
+
+msgid "Configure Telegram bot settings. Changes are saved to tg.cfg in the TorrServer working directory."
+msgstr "Настройка параметров Telegram-бота. Изменения сохраняются в tg.cfg в рабочем каталоге TorrServer."
+
+msgid "About Telegram Bot"
+msgstr "О Telegram-боте"
+
+msgid "The Telegram bot allows you to:"
+msgstr "Telegram-бот позволяет вам:"
+
+msgid "Search and add torrents via Telegram"
+msgstr "Искать и добавлять торренты через Telegram"
+
+msgid "Get notifications about download progress"
+msgstr "Получать уведомления о прогрессе загрузки"
+
+msgid "Control playback from your phone"
+msgstr "Управлять воспроизведением с телефона"
+
+msgid "To enable:"
+msgstr "Для включения:"
+
+msgid "Set the Telegram bot token in the \"Telegram Bot\" section on this page."
+msgstr "Установите токен Telegram-бота в разделе \"Telegram-бот\" на этой странице."
+
+msgid "Telegram API URL"
+msgstr "URL API Telegram"
+
+msgid "Base URL for Telegram Bot API. Default: https://api.telegram.org"
+msgstr "Базовый URL для API Telegram-бота. По умолчанию: https://api.telegram.org"
+
+msgid "Web Interface URL"
+msgstr "URL веб-интерфейса"
+
+msgid "Base URL for stream links sent to Telegram. Leave empty for auto-detection."
+msgstr "Базовый URL для ссылок на потоки, отправляемых в Telegram. Оставьте пустым для автоопределения."
+
+msgid "SOCKS5 Proxy"
+msgstr "SOCKS5 прокси"
+
+msgid "Optional SOCKS5 proxy for connecting to Telegram API. Format: host:port or socks5://user:pass@host:port"
+msgstr "Необязательный SOCKS5 прокси для подключения к API Telegram. Формат: host:port или socks5://user:pass@host:port"
+
+msgid "Allowed User IDs (WhiteIds)"
+msgstr "Разрешённые ID пользователей (WhiteIds)"
+
+msgid "Add ID"
+msgstr "Добавить ID"
+
+msgid "Telegram user IDs allowed to use the bot. Get user ID from @userinfobot or @getmyid_bot. Empty list = allow all users."
+msgstr "ID пользователей Telegram, которым разрешено использовать бота. Получите ID пользователя от @userinfobot или @getmyid_bot. Пустой список = разрешить всех пользователей."
+
+msgid "Blocked User IDs (BlackIds)"
+msgstr "Заблокированные ID пользователей (BlackIds)"
+
+msgid "Telegram user IDs blocked from using the bot. Blacklisted users cannot interact with the bot."
+msgstr "ID пользователей Telegram, заблокированные от использования бота. Пользователи из чёрного списка не могут взаимодействовать с ботом."
+
+msgid "Invalid WhiteIds format at position %d: %s"
+msgstr "Неверный формат WhiteIds в позиции %d: %s"
+
+msgid "Invalid BlackIds format at position %d: %s"
+msgstr "Неверный формат BlackIds в позиции %d: %s"
+
+msgid "Telegram bot configuration saved successfully!"
+msgstr "Конфигурация Telegram-бота успешно сохранена!"
+
+msgid "Failed to save tg.cfg: "
+msgstr "Не удалось сохранить tg.cfg: "
+
+msgid "Failed to load tg.cfg: "
+msgstr "Не удалось загрузить tg.cfg: "
+
+msgid "Telegram Bot Configuration"
+msgstr "Конфигурация Telegram-бота"
+
+msgid "Failed to parse tg.cfg: "
+msgstr "Не удалось разобрать tg.cfg: "
+
+msgid "Edit tg.cfg"
+msgstr "Редактировать tg.cfg"
+
+msgid "WARNING: This is a JSON file. Invalid JSON will prevent the Telegram bot from starting."
+msgstr "ВНИМАНИЕ: Это JSON-файл. Неверный JSON помешает запуску Telegram-бота."
+
+msgid "TorrServer must be restarted after editing this file."
+msgstr "TorrServer должен быть перезапущен после редактирования этого файла."
+
+# ============================================================
+# ВИДЕО-ВОТЧЕР
+# ============================================================
+
+msgid "Select a torrent and file to watch. Only torrents with active status (Working/Preload) can be streamed."
+msgstr "Выберите торрент и файл для просмотра. Стримить можно только торренты с активным статусом (Работает/Предзагрузка)."
+
+msgid "Download M3U playlist with all torrents for external players (VLC, Kodi, etc.)"
+msgstr "Скачать M3U-плейлист со всеми торрентами для внешних плееров (VLC, Kodi и т.д.)"
+
+msgid "M3U All Torrents"
+msgstr "M3U всех торрентов"
+
+msgid "Select torrent:"
+msgstr "Выберите торрент:"
+
+msgid "Loading torrents…"
+msgstr "Загрузка списка торрентов…"
+
+msgid "Select file:"
+msgstr "Выберите файл:"
+
+msgid "Preload"
+msgstr "Предзагрузка"
+
+msgid "Activate torrent and download initial data if files are not yet available"
+msgstr "Активировать торрент и загрузить начальные данные, если файлы ещё не доступны"
+
+msgid "Watch in Browser"
+msgstr "Смотреть в браузере"
+
+msgid "Download Full Video"
+msgstr "Скачать видео целиком"
+
+msgid "M3U"
+msgstr "M3U"
+
+msgid "Probe"
+msgstr "ffprobe"
+
+msgid "Mark Viewed"
+msgstr "Отметить просмотренным"
+
+msgid "Watch Video from Torrents"
+msgstr "Смотреть видео из торрентов"
+
+msgid "No torrents available"
+msgstr "Нет доступных торрентов"
+
+msgid "— Choose torrent —"
+msgstr "— Выберите торрент —"
+
+msgid "Loading files…"
+msgstr "Загрузка файлов…"
+
+msgid "No files found"
+msgstr "Файлы не найдены"
+
+msgid "— Choose file —"
+msgstr "— Выберите файл —"
+
+msgid "Failed to load torrents"
+msgstr "Не удалось загрузить торренты"
+
+msgid "Failed to load files:"
+msgstr "Не удалось загрузить файлы:"
+
+msgid "Please select a torrent first."
+msgstr "Сначала выберите торрент."
+
+msgid "Waiting for torrent to activate and files to appear…"
+msgstr "Ожидание активации торрента и появления файлов…"
+
+msgid "Checking for files… (attempt %d of %d)"
+msgstr "Проверка наличия файлов… (попытка %d из %d)"
+
+msgid "Files found!"
+msgstr "Файлы найдены!"
+
+msgid "file(s) available. Select a file to watch."
+msgstr "файл(ов) доступно. Выберите файл для просмотра."
+
+msgid "Preload complete! %d file(s) found."
+msgstr "Предзагрузка завершена! Найдено %d файл(ов)."
+
+msgid "Files did not appear within %d seconds. The torrent may need more time, or it has no files. Try closing and reopening this dialog."
+msgstr "Файлы не появились в течение %d секунд. Торренту может потребоваться больше времени, или в нём нет файлов. Попробуйте закрыть и снова открыть этот диалог."
+
+msgid "Failed to get torrent info after multiple attempts."
+msgstr "Не удалось получить информацию о торренте после нескольких попыток."
+
+msgid "Failed to start preload:"
+msgstr "Не удалось начать предзагрузку:"
+
+msgid "Please select a torrent and file first."
+msgstr "Сначала выберите торрент и файл."
+
+msgid "File marked as viewed!"
+msgstr "Файл отмечен как просмотренный!"
+
+msgid "Failed to mark as viewed:"
+msgstr "Не удалось отметить как просмотренный:"
+
+# ============================================================
+# ДОБАВЛЕНИЕ / ЗАГРУЗКА ТОРРЕНТОВ
+# ============================================================
+
+msgid "Add torrent by magnet link, hash, URL, or torrs:// link:"
+msgstr "Добавить торрент по магнет-ссылке, хэшу, URL или ссылке torrs://:"
+
+msgid "Optional title"
+msgstr "Название (необязательно)"
+
+msgid "Optional category"
+msgstr "Категория (необязательно)"
+
+msgid "Optional poster URL"
+msgstr "URL постера (необязательно)"
+
+msgid "Optional custom data (JSON)"
+msgstr "Пользовательские данные (JSON, необязательно)"
+
+msgid "Save to database"
+msgstr "Сохранить в базу данных"
+
+msgid "If enabled, the torrent is saved in the database and will remain in the list after TorrServer restarts (shown as \"In DB\" when inactive). If disabled, the torrent exists only in memory and will be permanently lost after TorrServer restarts."
+msgstr "Если включено, торрент сохраняется в базе данных и остаётся в списке после перезапуска TorrServer (отображается как \"В БД\" когда неактивен). Если выключено, торрент существует только в памяти и будет безвозвратно утерян после перезапуска TorrServer."
+
+msgid "Please enter a link"
+msgstr "Пожалуйста, введите ссылку"
+
+msgid "Add Torrent"
+msgstr "Добавить торрент"
+
+msgid "Add"
+msgstr "Добавить"
+
+msgid "Upload one or more .torrent files:"
+msgstr "Загрузите один или несколько .torrent-файлов:"
+
+msgid "Title (single file only)"
+msgstr "Название (только для одного файла)"
+
+msgid "Poster URL (single file only)"
+msgstr "URL постера (только для одного файла)"
+
+msgid "Please select at least one .torrent file"
+msgstr "Выберите хотя бы один .torrent-файл"
+
+msgid "File(s) uploaded successfully!"
+msgstr "Файл(ы) успешно загружен(ы)!"
+
+msgid "Failed to upload file(s):"
+msgstr "Не удалось загрузить файл(ы):"
+
+msgid "Upload Torrent File(s)"
+msgstr "Загрузка .torrent-файлов"
+
+msgid "Upload"
+msgstr "Загрузить"
+
+# ============================================================
+# ДЕТАЛИ ТОРРЕНТА
+# ============================================================
+
+msgid "Torrent hash is missing!"
+msgstr "Отсутствует хэш торрента!"
+
+msgid "Torrent Details"
+msgstr "Подробности торрента"
+
+msgid "Loading torrent data…"
+msgstr "Загрузка данных торрента…"
+
+msgid "Hash: "
+msgstr "Хэш: "
+
+msgid "Category: "
+msgstr "Категория: "
+
+msgid "Status: "
+msgstr "Статус: "
+
+msgid "Total size: "
+msgstr "Общий размер: "
+
+msgid "Preloaded: "
+msgstr "Предзагружено: "
+
+msgid "Download speed: "
+msgstr "Скорость загрузки: "
+
+msgid "Upload speed: "
+msgstr "Скорость отдачи: "
+
+msgid "Peers: "
+msgstr "Пиры: "
+
+msgid "Seeders: "
+msgstr "Сидеры: "
+
+msgid "Poster: "
+msgstr "Постер: "
+
+msgid "Trackers:"
+msgstr "Трекеры:"
+
+msgid "Magnet link:"
+msgstr "Магнет-ссылка:"
+
+msgid "Show magnet link"
+msgstr "Показать магнет-ссылку"
+
+msgid "N/A (magnet not found)"
+msgstr "Н/Д (магнет не найден)"
+
+msgid "Auto-refresh: every 1 second"
+msgstr "Автообновление: каждую 1 секунду"
+
+msgid "Show raw JSON"
+msgstr "Показать сырой JSON"
+
+msgid "Cache Stats"
+msgstr "Статистика кэша"
+
+msgid "Failed to load torrent details:"
+msgstr "Не удалось загрузить подробности торрента:"
+
+msgid "Edit torrent metadata. Changes will be saved to the database."
+msgstr "Редактирование метаданных торрента. Изменения будут сохранены в базе данных."
+
+msgid "Torrent title"
+msgstr "Название торрента"
+
+msgid "Poster URL"
+msgstr "URL постера"
+
+msgid "Custom data (JSON)"
+msgstr "Пользовательские данные (JSON)"
+
+msgid "Custom Data"
+msgstr "Пользовательские данные"
+
+msgid "Torrent info updated successfully!"
+msgstr "Информация о торренте успешно обновлена!"
+
+msgid "Failed to update torrent info:"
+msgstr "Не удалось обновить информацию о торренте:"
+
+msgid "Edit Torrent Info"
+msgstr "Редактирование информации о торренте"
+
+msgid "Are you sure you want to remove this torrent?"
+msgstr "Вы уверены, что хотите удалить этот торрент?"
+
+msgid "Torrent removed successfully!"
+msgstr "Торрент успешно удалён!"
+
+msgid "Failed to remove torrent:"
+msgstr "Не удалось удалить торрент:"
+
+msgid "Are you sure you want to remove ALL torrents? This action cannot be undone!"
+msgstr "Вы уверены, что хотите удалить ВСЕ торренты? Это действие нельзя отменить!"
+
+msgid "All torrents removed successfully!"
+msgstr "Все торренты успешно удалены!"
+
+msgid "Failed to wipe torrents:"
+msgstr "Не удалось удалить все торренты:"
+
+# ============================================================
+# КЭШ
+# ============================================================
+
+msgid "Loading cache data…"
+msgstr "Загрузка данных кэша…"
+
+msgid "Cache Statistics"
+msgstr "Статистика кэша"
+
+msgid "No cache data available."
+msgstr "Данные кэша недоступны."
+
+msgid "Cache Capacity:"
+msgstr "Ёмкость кэша:"
+
+msgid "Cache Filled:"
+msgstr "Заполнено кэша:"
+
+msgid "Pieces Count:"
+msgstr "Количество частей:"
+
+msgid "Piece Size:"
+msgstr "Размер части:"
+
+msgid "Active Readers:"
+msgstr "Активные читатели:"
+
+msgid "Unload"
+msgstr "Выгрузить"
+
+msgid "Unload this torrent from memory? It will be stopped and cache will be cleared, but the torrent will remain in your list."
+msgstr "Выгрузить этот торрент из памяти? Он будет остановлен и кэш очищен, но торрент останется в вашем списке."
+
+msgid "Torrent unloaded successfully!"
+msgstr "Торрент успешно выгружен!"
+
+msgid "Failed to unload torrent:"
+msgstr "Не удалось выгрузить торрент:"
+
+msgid "Failed to load cache stats:"
+msgstr "Не удалось загрузить статистику кэша:"
+
+# ============================================================
+# ИСТОРИЯ ПРОСМОТРОВ
+# ============================================================
+
+msgid "No viewing history yet."
+msgstr "История просмотров пуста."
+
+msgid "Torrent Hash"
+msgstr "Хэш торрента"
+
+msgid "File Index"
+msgstr "Индекс файла"
+
+msgid "Timecode"
+msgstr "Таймкод"
+
+msgid "Viewing History"
+msgstr "История просмотров"
+
+msgid "Remove this entry from viewing history?"
+msgstr "Удалить эту запись из истории просмотров?"
+
+msgid "Entry removed from viewing history!"
+msgstr "Запись удалена из истории просмотров!"
+
+msgid "Failed to remove entry:"
+msgstr "Не удалось удалить запись:"
+
+msgid "Failed to load viewing history:"
+msgstr "Не удалось загрузить историю просмотров:"
+
+# ============================================================
+# НАСТРОЙКИ СЕРВЕРА (СПИСОК)
+# ============================================================
+
+msgid "Current TorrServer settings. You can view and modify these settings."
+msgstr "Текущие настройки TorrServer. Вы можете просматривать и изменять эти параметры."
+
+msgid "Retrackers Mode"
+msgstr "Режим ретрекеров"
+
+msgid "Enable IPv6"
+msgstr "Включить IPv6"
+
+msgid "Enable DLNA"
+msgstr "Включить DLNA"
+
+msgid "Enable Bonjour"
+msgstr "Включить Bonjour"
+
+msgid "Enable Rutor Search"
+msgstr "Включить поиск Rutor"
+
+msgid "Enable Torznab Search"
+msgstr "Включить поиск Torznab"
+
+msgid "Enable Debug"
+msgstr "Включить отладку"
+
+msgid "Cache Size (MB)"
+msgstr "Размер кэша (МБ)"
+
+msgid "Preload Cache (%)"
+msgstr "Предзагрузка кэша (%)"
+
+msgid "Connections Limit"
+msgstr "Лимит подключений"
+
+msgid "Upload Rate Limit (KB/s)"
+msgstr "Лимит скорости отдачи (КБ/с)"
+
+msgid "Download Rate Limit (KB/s)"
+msgstr "Лимит скорости загрузки (КБ/с)"
+
+msgid "Friendly Name"
+msgstr "Дружественное имя"
+
+msgid "Store Settings in JSON"
+msgstr "Хранить настройки в JSON"
+
+msgid "Store Viewed in JSON"
+msgstr "Хранить просмотренное в JSON"
+
+msgid "Track Timecode"
+msgstr "Отслеживать таймкод"
+
+msgid "Enabled"
+msgstr "Включено"
+
+msgid "Disabled"
+msgstr "Выключено"
+
+msgid "Settings Editor"
+msgstr "Редактор настроек"
+
+msgid "Storage"
+msgstr "Хранилище"
+
+msgid "Full Settings JSON"
+msgstr "Полный JSON настроек"
+
+msgid "Reset ALL settings to defaults? This cannot be undone!"
+msgstr "Сбросить ВСЕ настройки к значениям по умолчанию? Это действие нельзя отменить!"
+
+msgid "Settings reset to defaults!"
+msgstr "Настройки сброшены к значениям по умолчанию!"
+
+msgid "Failed to reset settings:"
+msgstr "Не удалось сбросить настройки:"
+
+msgid "Reset to Defaults"
+msgstr "Сбросить к умолчаниям"
+
+msgid "Shutdown TorrServer? You will need to start it manually or reboot the router."
+msgstr "Выключить TorrServer? Вам потребуется запустить его вручную или перезагрузить роутер."
+
+msgid "Server shutdown command sent!"
+msgstr "Команда выключения сервера отправлена!"
+
+msgid "Failed to shutdown server:"
+msgstr "Не удалось выключить сервер:"
+
+msgid "Shutdown Server"
+msgstr "Выключить сервер"
+
+msgid "TorrServer Settings"
+msgstr "Настройки TorrServer"
+
+msgid "Failed to load settings:"
+msgstr "Не удалось загрузить настройки:"
+
+# ============================================================
+# НАСТРОЙКИ СЕРВЕРА (ФОРМА)
+# ============================================================
+
+msgid "Convenient TorrServer settings editor. Changes are saved directly via API and applied immediately."
+msgstr "Удобный редактор настроек TorrServer. Изменения сохраняются напрямую через API и применяются немедленно."
+
+msgid "Cache & Performance"
+msgstr "Кэш и производительность"
+
+msgid "Amount of RAM for stream caching."
+msgstr "Объём ОЗУ для кэширования потока."
+
+msgid "Cache Preload (%)"
+msgstr "Предзагрузка кэша (%)"
+
+msgid "Percentage of cache to fill before starting playback."
+msgstr "Процент заполнения кэша перед началом воспроизведения."
+
+msgid "Reader Read Ahead (%)"
+msgstr "Чтение вперёд (%)"
+
+msgid "Read ahead percentage (5-100%)."
+msgstr "Процент чтения вперёд (5-100%)."
+
+msgid "Responsive Mode"
+msgstr "Адаптивный режим"
+
+msgid "Enable responsive mode."
+msgstr "Включить адаптивный режим."
+
+msgid "Remove Cache on Drop"
+msgstr "Удалять кэш при сбросе"
+
+msgid "Clear cache when torrent is dropped."
+msgstr "Очищать кэш при сбросе торрента."
+
+msgid "Use Disk"
+msgstr "Использовать диск"
+
+msgid "Use disk for caching instead of RAM."
+msgstr "Использовать диск для кэширования вместо ОЗУ."
+
+msgid "Connection & Network"
+msgstr "Подключение и сеть"
+
+msgid "Peers Listen Port"
+msgstr "Порт прослушивания пиров"
+
+msgid "0 = random port"
+msgstr "0 = случайный порт"
+
+msgid "Disable TCP"
+msgstr "Отключить TCP"
+
+msgid "Disable uTP"
+msgstr "Отключить uTP"
+
+msgid "Disable DHT"
+msgstr "Отключить DHT"
+
+msgid "Disable PEX"
+msgstr "Отключить PEX"
+
+msgid "Disable UPnP"
+msgstr "Отключить UPnP"
+
+msgid "Enable LPD"
+msgstr "Включить LPD"
+
+msgid "Local Peer Discovery"
+msgstr "Локальное обнаружение пиров"
+
+msgid "LPD IPv6"
+msgstr "LPD IPv6"
+
+msgid "Force Encryption"
+msgstr "Принудительное шифрование"
+
+msgid "Torrent Disconnect Timeout (s)"
+msgstr "Таймаут отключения торрента (с)"
+
+msgid "Speed Limits"
+msgstr "Ограничения скорости"
+
+msgid "0 = unlimited"
+msgstr "0 = без ограничений"
+
+msgid "Disable Upload"
+msgstr "Отключить отдачу"
+
+msgid "Disable torrent seeding (uploading)."
+msgstr "Отключить раздачу торрентов (отдачу)."
+
+msgid "Features & Services"
+msgstr "Функции и сервисы"
+
+msgid "DLNA Server"
+msgstr "DLNA-сервер"
+
+msgid "Enable DLNA for auto-discovery on the local network."
+msgstr "Включить DLNA для автообнаружения в локальной сети."
+
+msgid "Bonjour/mDNS LAN discovery (_torrserver, _http, _https)"
+msgstr "Bonjour/mDNS обнаружение в ЛС (_torrserver, _http, _https)"
+
+msgid "Device Name (DLNA/Bonjour)"
+msgstr "Имя устройства (DLNA/Bonjour)"
+
+msgid "Shared name for DLNA and Bonjour"
+msgstr "Общее имя для DLNA и Bonjour"
+
+msgid "Torznab Indexers"
+msgstr "Индексаторы Torznab"
+
+msgid "Name"
+msgstr "Имя"
+
+msgid "Host URL"
+msgstr "URL хоста"
+
+msgid "API Key"
+msgstr "API-ключ"
+
+msgid "+ Add Torznab Indexer"
+msgstr "+ Добавить индексатор Torznab"
+
+msgid "Add Torznab-compatible indexers (Jackett, Prowlarr, etc.)"
+msgstr "Добавить Torznab-совместимые индексаторы (Jackett, Prowlarr и т.д.)"
+
+msgid "Remember playback position to resume later."
+msgstr "Запоминать позицию воспроизведения для продолжения позже."
+
+msgid "Show FS Active Torr"
+msgstr "Показывать активные торренты в FS"
+
+msgid "Storage & Files"
+msgstr "Хранилище и файлы"
+
+msgid "If disabled, settings are stored in the config.db (BBolt) database."
+msgstr "Если выключено, настройки хранятся в базе данных config.db (BBolt)."
+
+msgid "Store History in JSON"
+msgstr "Хранить историю в JSON"
+
+msgid "If disabled, viewing history is stored in config.db (BBolt)."
+msgstr "Если выключено, история просмотров хранится в config.db (BBolt)."
+
+msgid "Torrents Save Path"
+msgstr "Путь сохранения торрентов"
+
+msgid "Directory to save downloaded torrent files."
+msgstr "Каталог для сохранения загруженных торрент-файлов."
+
+msgid "SSL / HTTPS"
+msgstr "SSL / HTTPS"
+
+msgid "SSL Port"
+msgstr "Порт SSL"
+
+msgid "0 = disabled"
+msgstr "0 = отключено"
+
+msgid "SSL Certificate Path"
+msgstr "Путь к SSL-сертификату"
+
+msgid "SSL Key Path"
+msgstr "Путь к SSL-ключу"
+
+msgid "Debug & Advanced"
+msgstr "Отладка и расширенные"
+
+msgid "Debug Mode"
+msgstr "Режим отладки"
+
+msgid "Enable detailed logging (Debug)."
+msgstr "Включить подробное логирование (отладка)."
+
+msgid "Retrackers"
+msgstr "Ретрекеры"
+
+msgid "0 - Don't add"
+msgstr "0 - Не добавлять"
+
+msgid "1 - Add retrackers (default)"
+msgstr "1 - Добавлять ретрекеры (по умолчанию)"
+
+msgid "2 - Remove retrackers"
+msgstr "2 - Удалять ретрекеры"
+
+msgid "3 - Replace retrackers"
+msgstr "3 - Заменять ретрекеры"
+
+msgid "TMDB API Key"
+msgstr "API-ключ TMDB"
+
+msgid "Used to download movie posters and descriptions."
+msgstr "Используется для загрузки постеров и описаний фильмов."
+
+msgid "TMDB API URL"
+msgstr "URL API TMDB"
+
+msgid "TMDB Image URL"
+msgstr "URL изображений TMDB"
+
+msgid "TMDB Image URL (RU)"
+msgstr "URL изображений TMDB (RU)"
+
+msgid "Saving…"
+msgstr "Сохранение…"
+
+msgid "Settings saved successfully!"
+msgstr "Настройки успешно сохранены!"
+
+msgid "TorrServer Settings (Form)"
+msgstr "Настройки TorrServer (форма)"
+
+msgid "Failed to load settings: "
+msgstr "Не удалось загрузить настройки: "
+
+# ============================================================
+# ИНФОРМАЦИЯ О СЕРВЕРЕ
+# ============================================================
+
+msgid "Version:"
+msgstr "Версия:"
+
+msgid "API Base URL:"
+msgstr "Базовый URL API:"
+
+msgid "Interactive API Documentation (Swagger UI):"
+msgstr "Интерактивная документация API (Swagger UI):"
+
+msgid "Open Swagger UI"
+msgstr "Открыть Swagger UI"
+
+msgid "provides an interactive web-based interface for exploring and testing all TorrServer REST API endpoints directly from your browser. You can view endpoint documentation, try API calls with real parameters, and see response formats without writing any code."
+msgstr "предоставляет интерактивный веб-интерфейс для изучения и тестирования всех конечных точек REST API TorrServer прямо из браузера. Вы можете просматривать документацию, выполнять API-вызовы с реальными параметрами и видеть форматы ответов без написания кода."
+
+msgid "API Specification (OpenAPI 2.0 JSON):"
+msgstr "Спецификация API (OpenAPI 2.0 JSON):"
+
+msgid "doc.json"
+msgstr "doc.json"
+
+msgid "contains the complete OpenAPI 2.0 specification in JSON format. This machine-readable file describes all API endpoints, parameters, request/response schemas, and authentication methods. It can be used by API clients, code generators, and documentation tools."
+msgstr "содержит полную спецификацию OpenAPI 2.0 в формате JSON. Этот машиночитаемый файл описывает все конечные точки API, параметры, схемы запросов/ответов и методы аутентификации. Его можно использовать в API-клиентах, генераторах кода и инструментах документирования."
+
+msgid "Server Statistics (raw output)"
+msgstr "Статистика сервера (сырой вывод)"
+
+msgid "Could not load server statistics. TorrServer API may be unavailable."
+msgstr "Не удалось загрузить статистику сервера. API TorrServer может быть недоступен."
+
+msgid "Server Information"
+msgstr "Информация о сервере"
+
+msgid "Failed to get server info:"
+msgstr "Не удалось получить информацию о сервере:"
+
+msgid "Server Info"
+msgstr "Инфо о сервере"
+
+# ============================================================
+# КАРТОЧКА СТАТУСА / СТАТИСТИКА ПРОЦЕССА
+# ============================================================
+
+msgid "Torrents:"
+msgstr "Торренты:"
+
+msgid "total"
+msgstr "всего"
+
+msgid "working"
+msgstr "работают"
+
+msgid "preloading"
+msgstr "предзагрузка"
+
+msgid "paused"
+msgstr "на паузе"
+
+msgid "in DB (idle)"
+msgstr "в БД (простой)"
+
+msgid "BitTorrent Stats"
+msgstr "Статистика BitTorrent"
+
+msgid "BT Traffic (cumulative):"
+msgstr "BT-трафик (суммарно):"
+
+msgid "Current speed (live):"
+msgstr "Текущая скорость (в реальном времени):"
+
+msgid "Data efficiency:"
+msgstr "Эффективность данных:"
+
+msgid "Wasted chunks:"
+msgstr "Потерянные чанки:"
+
+msgid "Corrupted pieces:"
+msgstr "Повреждённые части:"
+
+msgid "Network & DHT"
+msgstr "Сеть и DHT"
+
+msgid "DHT:"
+msgstr "DHT:"
+
+msgid "nodes"
+msgstr "узлов"
+
+msgid "port"
+msgstr "порт"
+
+msgid "Active DHT transactions:"
+msgstr "Активные DHT-транзакции:"
+
+msgid "Banned IPs:"
+msgstr "Заблокированные IP:"
+
+msgid "Peer ID (spoofed):"
+msgstr "Peer ID (подменённый):"
+
+msgid "Announce key:"
+msgstr "Ключ анонса:"
+
+msgid "DHT Node ID:"
+msgstr "ID узла DHT:"
+
+msgid "Process"
+msgstr "Процесс"
+
+msgid "Process PID:"
+msgstr "PID процесса:"
+
+msgid "User:"
+msgstr "Пользователь:"
+
+msgid "Primary group:"
+msgstr "Основная группа:"
+
+msgid "Supplementary groups:"
+msgstr "Дополнительные группы:"
+
+msgid "Process uptime:"
+msgstr "Время работы процесса:"
+
+msgid "RAM usage by process (RSS):"
+msgstr "Использование ОЗУ процессом (RSS):"
+
+msgid "of system RAM"
+msgstr "из системной ОЗУ"
+
+msgid "still available"
+msgstr "ещё доступно"
+
+msgid "CPU usage by process:"
+msgstr "Использование ЦП процессом:"
+
+msgid "system CPU has"
+msgstr "у системного ЦП ещё осталось"
+
+msgid "free capacity remaining for load"
+msgstr "свободной мощности под загрузку"
+
+msgid "system CPU free capacity remaining"
+msgstr "свободная мощность системного ЦП"
+
+msgid "Full path with arguments:"
+msgstr "Полный путь с аргументами:"
+
+msgid "Running"
+msgstr "Запущен"
+
+msgid "Stopped"
+msgstr "Остановлен"
+
+msgid "Running, but API not responding"
+msgstr "Запущен, но API не отвечает"
+
+msgid "API unreachable"
+msgstr "API недоступен"
+
+msgid "Process is running but the REST API is not responding yet. TorrServer might still be initializing, or there may be an internal error. Check the logs for details."
+msgstr "Процесс запущен, но REST API ещё не отвечает. Возможно, TorrServer всё ещё инициализируется или произошла внутренняя ошибка. Проверьте логи для подробностей."
+
+msgid "Possible startup errors:"
+msgstr "Возможные ошибки запуска:"
+
+msgid "Version (binary):"
+msgstr "Версия (бинарник):"
+
+msgid "Version (REST API):"
+msgstr "Версия (REST API):"
+
+# ============================================================
+# УПРАВЛЕНИЕ СЛУЖБОЙ
+# ============================================================
+
+msgid "Autostart enabled."
+msgstr "Автозапуск включён."
+
+msgid "Autostart disabled."
+msgstr "Автозапуск выключен."
+
+msgid "Service Status"
+msgstr "Состояние службы"
+
+msgid "TorrServer Service"
+msgstr "Служба TorrServer"
+
+msgid "Starting the service"
+msgstr "Запуск службы"
+
+msgid "Start"
+msgstr "Запустить"
+
+msgid "Restarting the service"
+msgstr "Перезапуск службы"
+
+msgid "Restart"
+msgstr "Перезапустить"
+
+msgid "Stopping the service"
+msgstr "Остановка службы"
+
+msgid "Terminate"
+msgstr "Завершить"
+
+msgid "Autostart of the service"
+msgstr "Автозапуск службы"
+
+msgid "Failed to enable autostart:"
+msgstr "Не удалось включить автозапуск:"
+
+msgid "Failed to disable autostart:"
+msgstr "Не удалось выключить автозапуск:"
+
+# ============================================================
+# УПРАВЛЕНИЕ ЧЕРЕЗ API
+# ============================================================
+
+msgid "TorrServer management via API"
+msgstr "Управление TorrServer через API"
+
+msgid "Torrent Actions"
+msgstr "Действия с торрентами"
+
+msgid "Manage torrents, watch video, and view history via TorrServer REST API."
+msgstr "Управление торрентами, просмотр видео и история через REST API TorrServer."
+
+msgid "Watch Video"
+msgstr "Смотреть видео"
+
+msgid "Server Actions"
+msgstr "Действия с сервером"
+
+msgid "Speed test, server settings, and server information via TorrServer REST API."
+msgstr "Тест скорости, настройки сервера и информация о сервере через REST API TorrServer."
+
+msgid "Server Settings"
+msgstr "Настройки сервера"
+
+msgid "Web Interface"
+msgstr "Веб-интерфейс"
+
+msgid "Open Web Interface"
+msgstr "Открыть веб-интерфейс"
+
+msgid "Open TorrServer UI"
+msgstr "Открыть UI TorrServer"
+
+# ============================================================
+# ХРАНИЛИЩЕ И БАЗА ДАННЫХ (РАЗДЕЛ НАСТРОЕК)
+# ============================================================
+
+msgid "Storage & Database"
+msgstr "Хранилище и база данных"
+
+msgid "Storage location for database and settings"
+msgstr "Расположение хранилища для базы данных и настроек"
+
+msgid "RAM (/var/etc/torrserver)"
+msgstr "ОЗУ (/var/etc/torrserver)"
+
+msgid "ROM (/etc/torrserver)"
+msgstr "ПЗУ (/etc/torrserver)"
+
+msgid "Custom path"
+msgstr "Пользовательский путь"
+
+msgid "RAM (Temporary Storage)"
+msgstr "ОЗУ (временное хранилище)"
+
+msgid "Data is stored in RAM (/var/etc/torrserver)."
+msgstr "Данные хранятся в ОЗУ (/var/etc/torrserver)."
+
+msgid "Pros:"
+msgstr "Преимущества:"
+
+msgid "High speed, no wear on router flash memory."
+msgstr "Высокая скорость, отсутствие износа flash-памяти роутера."
+
+msgid "Cons:"
+msgstr "Недостатки:"
+
+msgid "All settings, torrent database, and viewing history will be lost on reboot or power loss."
+msgstr "Все настройки, база данных торрентов и история просмотров будут потеряны при перезагрузке или отключении питания."
+
+msgid "ROM (Persistent Storage)"
+msgstr "ROM (постоянное хранилище)"
+
+msgid "Data is stored in router internal memory (/etc/torrserver)."
+msgstr "Данные хранятся во внутренней памяти роутера (/etc/torrserver)."
+
+msgid "Settings and history persist across reboots."
+msgstr "Настройки и история сохраняются между перезагрузками."
+
+msgid "Frequent write cycles (database/history updates, settings changes) wear out NAND flash memory, which can eventually kill the router. Router flash memory typically has limited write endurance. Use this mode only if you accept the risk of flash wear."
+msgstr "Частые циклы записи (обновления базы данных/истории, изменения настроек) изнашивают NAND flash-память, что в конечном итоге может вывести роутер из строя. Flash-память роутера обычно имеет ограниченную стойкость к записи. Используйте этот режим только если принимаете риск износа."
+
+msgid "Custom Path"
+msgstr "Пользовательский путь"
+
+msgid "Stored in any permitted folder."
+msgstr "Хранится в любой разрешённой папке."
+
+msgid "You can use any path and any mounted folder (external storage or internal memory), as long as it is accessible to the torrserver user."
+msgstr "Вы можете использовать любой путь и любую смонтированную папку (внешнее хранилище или внутреннюю память), если она доступна пользователю torrserver."
+
+msgid "Requires careful path selection to avoid overwriting important files, losing data, or wearing out write-sensitive memory."
+msgstr "Требует тщательного выбора пути, чтобы избежать перезаписи важных файлов, потери данных или износа чувствительной к записи памяти."
+
+msgid "Absolute path to a directory for TorrServer working files. Use the \"Browse Drives\" button below to select from mounted disks, or enter a path manually."
+msgstr "Абсолютный путь к каталогу для рабочих файлов TorrServer. Используйте кнопку «Обзор дисков» ниже для выбора из смонтированных дисков или введите путь вручную."
+
+msgid "The directory will be created automatically with correct ownership ("
+msgstr "Каталог будет создан автоматически с правильным владельцем ("
+
+msgid ") if it does not exist."
+msgstr ") если он не существует."
+
+msgid "Do not point this path to system directories ("
+msgstr "Не указывайте этот путь на системные каталоги ("
+
+msgid ") or other application data — the script will refuse to operate there for security reasons."
+msgstr ") или данные других приложений — скрипт откажется работать там в целях безопасности."
+
+msgid "Browse Drives"
+msgstr "Обзор дисков"
+
+msgid "Browse Available Drives"
+msgstr "Обзор доступных дисков"
+
+msgid "Shows mounted USB drives, SD cards, and other storage devices. Click \"Select\" on any drive to automatically fill the path above with a \"torrserver\" subdirectory."
+msgstr "Показывает смонтированные USB-накопители, SD-карты и другие устройства хранения. Нажмите «Выбрать» на любом диске, чтобы автоматически заполнить путь выше подкаталогом «torrserver»."
+
+msgid "Disk Space"
+msgstr "Дисковое пространство"
+
+msgid "File presence in the working directory depends on TorrServer configuration:"
+msgstr "Наличие файлов в рабочем каталоге зависит от конфигурации TorrServer:"
+
+msgid "always present; BBolt database storing torrents, and optionally settings/viewing history if BBolt storage is selected."
+msgstr "всегда присутствует; база данных BBolt, хранящая торренты, и опционально настройки/историю просмотров, если выбрано хранилище BBolt."
+
+msgid "exists only if JSON storage type is chosen for settings in TorrServer web UI."
+msgstr "существует только если в веб-интерфейсе TorrServer выбран тип хранилища JSON для настроек."
+
+msgid "exists only if JSON storage type is chosen for viewing history."
+msgstr "существует только если в веб-интерфейсе TorrServer выбран тип хранилища JSON для истории просмотров."
+
+msgid "created automatically when HTTP authentication is enabled; stores login:password pairs."
+msgstr "создаётся автоматически при включении HTTP-аутентификации; хранит пары логин:пароль."
+
+msgid "created when IP Access Control is enabled (whitelist/blacklist)."
+msgstr "создаётся при включении контроля доступа по IP (белый/чёрный список)."
+
+msgid "Files not required by the current configuration simply do not exist. This is normal and expected."
+msgstr "Файлы, не требуемые текущей конфигурацией, просто не существуют. Это нормально и ожидаемо."
+
+msgid "Path to TorrServer working directory:"
+msgstr "Путь к рабочему каталогу TorrServer:"
+
+msgid "Available in TorrServer working directory:"
+msgstr "Доступно в рабочем каталоге TorrServer:"
+
+msgid "This is a binary key-value BBolt (BoltDB) database. It stores the list of added torrents and their states (paused, active, etc.). It may also store settings and viewing history depending on TorrServer web interface settings. This is a binary file — it cannot be edited as plain text. Special utilities are needed to view and edit it, but it is best to leave this specific file to the TorrServer program."
+msgstr "Это бинарная key-value база данных BBolt (BoltDB). Она хранит список добавленных торрентов и их состояния (на паузе, активные и т.д.). Также может хранить настройки и историю просмотров в зависимости от настроек веб-интерфейса TorrServer. Это бинарный файл — его нельзя редактировать как обычный текст. Для просмотра и редактирования нужны специальные утилиты, но лучше оставить этот конкретный файл программе TorrServer."
+
+msgid "View all files in TorrServer working directory"
+msgstr "Просмотреть все файлы в рабочем каталоге TorrServer"
+
+msgid "Start in read-only database mode"
+msgstr "Запуск в режиме БД только для чтения"
+
+msgid "Starts TorrServer in read-only database mode. In this mode, the server will not write changes to the config.db database. Useful for testing, running from read-only storage, or protecting the database from accidental modifications. Torrents added in this mode will exist only in memory and will be lost after restart."
+msgstr "Запускает TorrServer в режиме базы данных только для чтения. В этом режиме сервер не будет записывать изменения в базу данных config.db. Полезно для тестирования, запуска с носителя только для чтения или защиты базы данных от случайных изменений. Торренты, добавленные в этом режиме, будут существовать только в памяти и будут потеряны после перезапуска."
+
+msgid "TorrServer allows you to choose between different storage types for settings and viewing history."
+msgstr "TorrServer позволяет выбирать между различными типами хранилища для настроек и истории просмотров."
+
+msgid "Storage Type Configuration"
+msgstr "Настройка типа хранилища"
+
+msgid "Configure Storage"
+msgstr "Настроить хранилище"
+
+msgid "This setting is managed via TorrServer REST API, not via UCI/OpenWrt configuration."
+msgstr "Этот параметр управляется через REST API TorrServer, а не через конфигурацию UCI/OpenWrt."
+
+msgid "Configuration Files"
+msgstr "Файлы конфигурации"
+
+msgid "Settings Editor (Form)"
+msgstr "Редактор настроек (форма)"
+
+msgid "A convenient form to change TorrServer settings without manually editing the JSON file"
+msgstr "Удобная форма для изменения настроек TorrServer без ручного редактирования JSON-файла"
+
+msgid "Edit settings.json"
+msgstr "Редактировать settings.json"
+
+msgid "Application settings in JSON format. This file may not exist if TorrServer is configured to use BBolt database for settings (check TorrServer web UI settings). If the file does not exist, it will be created when you save."
+msgstr "Настройки приложения в формате JSON. Этот файл может не существовать, если TorrServer настроен на использование базы данных BBolt для настроек (проверьте настройки веб-интерфейса TorrServer). Если файла нет, он будет создан при сохранении."
+
+msgid "WARNING: TorrServer may overwrite this file when it restarts. Make a backup first! This file may not exist if TorrServer uses BBolt storage."
+msgstr "ВНИМАНИЕ: TorrServer может перезаписать этот файл при перезапуске. Сначала сделайте резервную копию! Этот файл может не существовать, если TorrServer использует BBolt-хранилище."
+
+msgid "Edit viewed.json"
+msgstr "Редактировать viewed.json"
+
+msgid "Viewing history in JSON format. This file may not exist if TorrServer is configured to use BBolt database for viewing history (check TorrServer web UI settings). If the file does not exist, it will be created when you save."
+msgstr "История просмотров в формате JSON. Этот файл может не существовать, если TorrServer настроен на использование базы данных BBolt для истории просмотров (проверьте настройки веб-интерфейса TorrServer). Если файла нет, он будет создан при сохранении."
+
+msgid "WARNING: This file may not exist if TorrServer uses BBolt storage for viewing history. File format: JSON with viewing history data."
+msgstr "ВНИМАНИЕ: Этот файл может не существовать, если TorrServer использует BBolt-хранилище для истории просмотров. Формат файла: JSON с данными истории просмотров."
+
+# ============================================================
+# ДАННЫЕ ПРИ УДАЛЕНИИ
+# ============================================================
+
+msgid "Data Persistence on Uninstall"
+msgstr "Сохранение данных при удалении"
+
+msgid "When the"
+msgstr "При удалении пакета"
+
+msgid "package is removed, the following data is"
+msgstr "следующие данные"
+
+msgid "NOT deleted"
+msgstr "НЕ удаляются"
+
+msgid "and will be preserved after reinstall:"
+msgstr "и будут сохранены после переустановки:"
+
+msgid "working directory containing"
+msgstr "рабочий каталог, содержащий"
+
+msgid "and all torrent data stored in this location."
+msgstr "и все данные торрентов, хранящиеся в этом месте."
+
+msgid "All files edited or created via this LuCI interface (IP lists, HTTP credentials, Telegram config, etc.)"
+msgstr "Все файлы, отредактированные или созданные через этот интерфейс LuCI (IP-списки, HTTP-учётные данные, конфиг Telegram и т.д.)"
+
+msgid "Backup archives created via \"Create Backup\" feature"
+msgstr "Архивы резервных копий, созданные через функцию \"Создать резервную копию\""
+
+msgid "UCI configuration (ports, paths, flags, autostart settings)"
+msgstr "UCI-конфигурация (порты, пути, флаги, настройки автозапуска)"
+
+msgid "To completely remove all TorrServer data:"
+msgstr "Для полного удаления всех данных TorrServer:"
+
+msgid "run"
+msgstr "выполните"
+
+msgid "and optionally"
+msgstr "и опционально"
+
+msgid "(if ROM storage was used)"
+msgstr "(если использовалось хранилище ROM)"
+
+msgid "via SSH after uninstalling the package."
+msgstr "через SSH после удаления пакета."
+
+# ============================================================
+# ИСПРАВЛЕНИЕ ПРАВ
+# ============================================================
+
+msgid "Security"
+msgstr "Безопасность"
+
+msgid "Fix File Permissions"
+msgstr "Исправить права доступа к файлам"
+
+msgid "Applies correct permissions to known TorrServer files."
+msgstr "Применяет корректные права к известным файлам TorrServer."
+
+msgid "Only files owned by"
+msgstr "Изменяются только файлы, принадлежащие"
+
+msgid "are modified — external files are left untouched."
+msgstr "— внешние файлы не затрагиваются."
+
+msgid "Use this button if you edited files manually via SSH/SFTP or placed .torrent files in the auto-load directory, and the service refuses to start or read them due to permission errors."
+msgstr "Используйте эту кнопку, если вы редактировали файлы вручную через SSH/SFTP или помещали .torrent-файлы в каталог автозагрузки, и служба не запускается или не читает их из-за ошибок прав доступа."
+
+msgid "Scheme:"
+msgstr "Схема:"
+
+msgid "logs"
+msgstr "логи"
+
+msgid "working directory"
+msgstr "рабочий каталог"
+
+msgid "This will set the following permissions — Working directory: 750 (owner: torrserver); config.db, accs.db, settings.json, viewed.json, tg.cfg, wip.txt, bip.txt: 600; Log files: 640. Other files in the directory will NOT be affected. Continue?"
+msgstr "Будут установлены следующие права — Рабочий каталог: 750 (владелец: torrserver); config.db, accs.db, settings.json, viewed.json, tg.cfg, wip.txt, bip.txt: 600; Файлы логов: 640. Другие файлы в каталоге НЕ будут затронуты. Продолжить?"
+
+msgid "Permissions fixed successfully!"
+msgstr "Права успешно исправлены!"
+
+msgid "Failed to fix permissions:"
+msgstr "Не удалось исправить права:"
+
+msgid "Fix permissions error:"
+msgstr "Ошибка исправления прав:"
+
+# ============================================================
+# БЭКАП / ВОССТАНОВЛЕНИЕ
+# ============================================================
+
+msgid "Backup & Restore"
+msgstr "Резервное копирование и восстановление"
+
+msgid "Configuration Backup"
+msgstr "Резервное копирование конфигурации"
+
+msgid "Create a backup of TorrServer configuration files (database, settings, viewing history, IP lists) or restore from a previous backup."
+msgstr "Создание резервной копии файлов конфигурации TorrServer (база данных, настройки, история просмотров, IP-списки) или восстановление из предыдущей копии."
+
+msgid "Files included:"
+msgstr "Включённые файлы:"
+
+msgid "Create Backup"
+msgstr "Создать резервную копию"
+
+msgid "Restore from Backup"
+msgstr "Восстановить из резервной копии"
+
+msgid "Select a destination directory for the backup archive:"
+msgstr "Выберите каталог назначения для архива резервной копии:"
+
+msgid "Loading available mounts…"
+msgstr "Загрузка доступных накопителей…"
+
+msgid "Or enter custom path:"
+msgstr "Или введите путь вручную:"
+
+msgid "Must be an absolute path to a writable directory."
+msgstr "Должен быть абсолютный путь к каталогу с правами на запись."
+
+msgid "Backup to Custom Path"
+msgstr "Резервная копия в свой путь"
+
+msgid "Please enter a destination path or select a drive from the table above."
+msgstr "Введите путь назначения или выберите накопитель из таблицы выше."
+
+msgid "Path must be absolute (starting with /)."
+msgstr "Путь должен быть абсолютным (начинаться с /)."
+
+msgid "Creating backup in"
+msgstr "Создание резервной копии в"
+
+msgid "Backup created successfully!"
+msgstr "Резервная копия успешно создана!"
+
+msgid "Path:"
+msgstr "Путь:"
+
+msgid "Size:"
+msgstr "Размер:"
+
+msgid "Files:"
+msgstr "Файлы:"
+
+msgid "Backup failed:"
+msgstr "Ошибка создания резервной копии:"
+
+msgid "Backup error:"
+msgstr "Ошибка резервного копирования:"
+
+msgid "Restoring from backup will overwrite current configuration files. TorrServer will be stopped during restoration and restarted afterwards."
+msgstr "Восстановление из резервной копии перезапишет текущие файлы конфигурации. TorrServer будет остановлен во время восстановления и перезапущен после."
+
+msgid "Enter the full path to the backup archive (.tar.gz):"
+msgstr "Введите полный путь к архиву резервной копии (.tar.gz):"
+
+msgid "You can find backup files in the directory where you created them."
+msgstr "Вы можете найти файлы резервных копий в каталоге, где вы их создали."
+
+msgid "Please enter the archive path."
+msgstr "Введите путь к архиву."
+
+msgid "Are you sure you want to restore from"
+msgstr "Вы уверены, что хотите восстановиться из"
+
+msgid "This will overwrite current configuration!"
+msgstr "Это перезапишет текущую конфигурацию!"
+
+msgid "Restore"
+msgstr "Восстановить"
+
+msgid "Restoring from backup… This may take a moment."
+msgstr "Восстановление из резервной копии… Это может занять некоторое время."
+
+msgid "Backup restored successfully!"
+msgstr "Резервная копия успешно восстановлена!"
+
+msgid "TorrServer has been restarted with the restored configuration."
+msgstr "TorrServer перезапущен с восстановленной конфигурацией."
+
+msgid "Restore failed:"
+msgstr "Ошибка восстановления:"
+
+msgid "Restore error:"
+msgstr "Ошибка восстановления:"
+
+msgid "Failed to load mounts:"
+msgstr "Не удалось загрузить список накопителей:"
+
+msgid "No mounted drives found. Use custom path below."
+msgstr "Смонтированные накопители не найдены. Используйте путь ниже."
+
+msgid "Backup Here"
+msgstr "Копировать сюда"
+
+# ============================================================
+# ВЫБОР ХРАНИЛИЩА (STORAGE SELECTOR)
+# ============================================================
+
+msgid "Select a mounted drive for TorrServer storage. The \"torrserver\" subdirectory will be created automatically."
+msgstr "Выберите смонтированный накопитель для хранилища TorrServer. Подкаталог \"torrserver\" будет создан автоматически."
+
+msgid "Select Storage Location"
+msgstr "Выбор расположения хранилища"
+
+msgid "No mounted drives found."
+msgstr "Смонтированные накопители не найдены."
+
+msgid "Path"
+msgstr "Путь"
+
+msgid "Available"
+msgstr "Доступно"
+
+msgid "Used"
+msgstr "Использовано"
+
+msgid "Action"
+msgstr "Действие"
+
+msgid "Use disk root: %s"
+msgstr "Использовать корень диска: %s"
+
+msgid "Root"
+msgstr "Корень"
+
+msgid "Use subdirectory: %s"
+msgstr "Использовать подкаталог: %s"
+
+msgid "/torrserver"
+msgstr "/torrserver"
+
+msgid "Storage path set to:"
+msgstr "Путь хранилища установлен в:"
+
+msgid "Click \"Save & Apply\" at the bottom to confirm."
+msgstr "Нажмите \"Сохранить и применить\" внизу для подтверждения."
+
+# ============================================================
+# ЛОГИРОВАНИЕ И ДИАГНОСТИКА
+# ============================================================
+
+msgid "Logging & Diagnostics"
+msgstr "Логирование и диагностика"
+
+msgid "Forward stdout to syslog"
+msgstr "Перенаправлять stdout в syslog"
+
+msgid "If enabled, standard output of the TorrServer process is captured by procd and forwarded to the system log. If disabled, stdout is discarded."
+msgstr "Если включено, стандартный вывод процесса TorrServer захватывается procd и перенаправляется в системный лог. Если выключено, stdout отбрасывается."
+
+msgid "Forward stderr to syslog"
+msgstr "Перенаправлять stderr в syslog"
+
+msgid "If enabled, standard error of the TorrServer process is captured by procd and forwarded to the system log. If disabled, stderr is discarded."
+msgstr "Если включено, стандартная ошибка процесса TorrServer захватывается procd и перенаправляется в системный лог. Если выключено, stderr отбрасывается."
+
+msgid "System Log (syslog)"
+msgstr "Системный лог (syslog)"
+
+msgid "View System Log (logread)"
+msgstr "Просмотр системного лога (logread)"
+
+msgid "Shows TorrServer entries from the system log (logread). Process output appears there only when at least one of the two options above is enabled (forwarding stdout/stderr to syslog). Messages from the init.d script are visible regardless of these options."
+msgstr "Показывает записи TorrServer из системного лога (logread). Вывод процесса появляется там только когда включена хотя бы одна из двух опций выше (перенаправление stdout/stderr в syslog). Сообщения из init.d скрипта видны независимо от этих опций."
+
+msgid "TorrServer System Log (logread)"
+msgstr "Системный лог TorrServer (logread)"
+
+msgid "Write server log to a separate file"
+msgstr "Записывать лог сервера в отдельный файл"
+
+msgid "If enabled, logs will be duplicated to the file specified below. Otherwise, they are only available via System Log (logread)."
+msgstr "Если включено, логи будут дублироваться в файл, указанный ниже. В противном случае они доступны только через системный лог (logread)."
+
+msgid "Server log file path"
+msgstr "Путь к файлу лога сервера"
+
+msgid "Absolute path to the log file. The parent directory will be created automatically with correct permissions. The file itself is created and written by TorrServer running as user"
+msgstr "Абсолютный путь к файлу лога. Родительский каталог будет создан автоматически с правильными правами. Сам файл создаётся и пишется TorrServer, работающим от пользователя"
+
+msgid "Path is required when file logging is enabled."
+msgstr "Путь требуется, когда включено логирование в файл."
+
+msgid "Write web access log to a separate file"
+msgstr "Записывать лог веб-доступа в отдельный файл"
+
+msgid "If enabled, web UI and API requests will be written to a separate file."
+msgstr "Если включено, запросы веб-интерфейса и API будут записываться в отдельный файл."
+
+msgid "Web access log file path"
+msgstr "Путь к файлу лога веб-доступа"
+
+msgid "Absolute path to the web requests log file."
+msgstr "Абсолютный путь к файлу лога веб-запросов."
+
+msgid "Path is required when web access logging is enabled."
+msgstr "Путь требуется, когда включено логирование веб-доступа."
+
+msgid "Service Logs"
+msgstr "Логи службы"
+
+msgid "View Server Log (Live Tail)"
+msgstr "Просмотр лога сервера (Live Tail)"
+
+msgid "Opens the log file with real-time updates (every second)."
+msgstr "Открывает файл лога с обновлениями в реальном времени (каждую секунду)."
+
+msgid "Log file path is not set."
+msgstr "Путь к файлу лога не задан."
+
+msgid "TorrServer Server Log - Live Tail"
+msgstr "Лог сервера TorrServer — Live Tail"
+
+msgid "Web Access Logs"
+msgstr "Логи веб-доступа"
+
+msgid "View Web Access Log (Live Tail)"
+msgstr "Просмотр лога веб-доступа (Live Tail)"
+
+msgid "Opens the web access log with real-time updates."
+msgstr "Открывает лог веб-доступа с обновлениями в реальном времени."
+
+msgid "Web access log path is not set."
+msgstr "Путь к логу веб-доступа не задан."
+
+msgid "TorrServer Web Access Log - Live Tail"
+msgstr "Лог веб-доступа TorrServer — Live Tail"
+
+msgid "Failed to read log file: "
+msgstr "Не удалось прочитать файл лога: "
+
+msgid "Log file is empty or does not exist yet."
+msgstr "Файл лога пуст или ещё не существует."
+
+msgid "Start Live Tail"
+msgstr "Запустить Live Tail"
+
+msgid "Stop Live Tail"
+msgstr "Остановить Live Tail"
+
+msgid "Live tail active - updating every 1 second"
+msgstr "Live tail активен — обновление каждую 1 секунду"
+
+msgid "Live tail active - updating every 2 seconds"
+msgstr "Live tail активен — обновление каждые 2 секунды"
+
+msgid "Source: "
+msgstr "Источник: "
+
+msgid "Live tail paused"
+msgstr "Live tail на паузе"
+
+msgid "Failed to read system log: "
+msgstr "Не удалось прочитать системный лог: "
+
+msgid "No torrserver entries found in system log. Make sure the service has been started at least once."
+msgstr "В системном логе не найдено записей torrserver. Убедитесь, что служба была запущена хотя бы один раз."
+
+msgid "Source: logread -e torrserver"
+msgstr "Источник: logread -e torrserver"
+
+# ============================================================
+# РЕДАКТОР ФАЙЛОВ / СПИСОК ФАЙЛОВ
+# ============================================================
+
+msgid "File does not exist yet. It will be created when you save."
+msgstr "Файл ещё не существует. Он будет создан при сохранении."
+
+msgid "File does not exist"
+msgstr "Файл не существует"
+
+msgid "Validation error: "
+msgstr "Ошибка валидации: "
+
+msgid "Failed to list directory: "
+msgstr "Не удалось получить список каталога: "
+
+msgid "File name"
+msgstr "Имя файла"
+
+msgid "Modified"
+msgstr "Изменён"
+
+msgid "Directory is empty or does not exist."
+msgstr "Каталог пуст или не существует."
+
+msgid "Files in"
+msgstr "Файлы в"
+
+# ============================================================
+# СЕТЬ И ПОРТЫ
+# ============================================================
+
+msgid "Network & Ports"
+msgstr "Сеть и порты"
+
+msgid "Bind IP addresses"
+msgstr "Привязка IP-адресов"
+
+msgid "Web server bind addresses (repeatable). Default is empty, which binds to all interfaces."
+msgstr "Адреса привязки веб-сервера (повторяемое поле). По умолчанию пусто, что означает привязку ко всем интерфейсам."
+
+msgid "HTTP web server port"
+msgstr "Порт HTTP веб-сервера"
+
+msgid "Port for the HTTP web server (default: 8090). This is the main port for accessing the TorrServer web interface and API when SSL is disabled."
+msgstr "Порт для HTTP веб-сервера (по умолчанию: 8090). Это основной порт для доступа к веб-интерфейсу и API TorrServer, когда SSL отключен."
+
+msgid "Port must be between 1 and 65535"
+msgstr "Порт должен быть в диапазоне от 1 до 65535"
+
+msgid "Enable HTTPS for web server"
+msgstr "Включить HTTPS для веб-сервера"
+
+msgid "Enables HTTPS for the web server. When enabled, TorrServer will listen on both HTTP and HTTPS ports simultaneously."
+msgstr "Включает HTTPS для веб-сервера. При включении TorrServer будет слушать одновременно и HTTP, и HTTPS порты."
+
+msgid "HTTPS web server port"
+msgstr "Порт HTTPS веб-сервера"
+
+msgid "Port for the HTTPS web server (default: 8091). If not set, will be taken from database (if stored previously) or the default will be used. Only active when HTTPS is enabled."
+msgstr "Порт для HTTPS веб-сервера (по умолчанию: 8091). Если не задан, будет взят из базы данных (если ранее сохранён) или использован по умолчанию. Активен только при включённом HTTPS."
+
+msgid "Path to SSL certificate file"
+msgstr "Путь к файлу SSL-сертификата"
+
+msgid "Path to the SSL certificate file. If not set, will be taken from database (if stored previously) or a default self-signed certificate/key will be generated automatically."
+msgstr "Путь к файлу SSL-сертификата. Если не задан, будет взят из базы данных (если ранее сохранён) или автоматически сгенерирован самоподписанный сертификат/ключ по умолчанию."
+
+msgid "Path to SSL key file"
+msgstr "Путь к файлу SSL-ключа"
+
+msgid "Path to the SSL private key file. If not set, will be taken from database (if stored previously) or a default self-signed certificate/key will be generated automatically."
+msgstr "Путь к файлу приватного SSL-ключа. Если не задан, будет взят из базы данных (если ранее сохранён) или автоматически сгенерирован самоподписанный сертификат/ключ по умолчанию."
+
+msgid "Force HTTPS"
+msgstr "Принудительный HTTPS"
+
+msgid "With SSL enabled, the HTTP listener answers only with 307 Temporary Redirect to HTTPS. Requires SSL to be enabled."
+msgstr "При включённом SSL HTTP-слушатель отвечает только редиректом 307 Temporary Redirect на HTTPS. Требует включения SSL."
+
+msgid "Public IPv4 address"
+msgstr "Публичный IPv4-адрес"
+
+msgid "Set public IPv4 address for the server. Used when the server is behind NAT and needs to report its external IP address to peers."
+msgstr "Задайте публичный IPv4-адрес сервера. Используется, когда сервер находится за NAT и должен сообщать пирам свой внешний IP-адрес."
+
+msgid "Public IPv6 address"
+msgstr "Публичный IPv6-адрес"
+
+msgid "Set public IPv6 address for the server. Used when the server is behind NAT and needs to report its external IPv6 address to peers."
+msgstr "Задайте публичный IPv6-адрес сервера. Используется, когда сервер находится за NAT и должен сообщать пирам свой внешний IPv6-адрес."
+
+msgid "Proxy URL for BitTorrent traffic"
+msgstr "URL прокси для BitTorrent-трафика"
+
+msgid "Set proxy URL (HTTP, SOCKS4, SOCKS5, SOCKS5H). Example: socks5h://user:password@example.com:2080"
+msgstr "Задайте URL прокси (HTTP, SOCKS4, SOCKS5, SOCKS5H). Пример: socks5h://user:password@example.com:2080"
+
+msgid "Proxy mode"
+msgstr "Режим прокси"
+
+msgid "Set proxy mode for BitTorrent traffic."
+msgstr "Задайте режим прокси для BitTorrent-трафика."
+
+msgid "Tracker only (default)"
+msgstr "Только трекер (по умолчанию)"
+
+msgid "Peers only"
+msgstr "Только пиры"
+
+msgid "Full (all traffic)"
+msgstr "Полный (весь трафик)"
+
+# ============================================================
+# КОНТРОЛЬ ДОСТУПА ПО IP
+# ============================================================
+
+msgid "IP Access Control"
+msgstr "Контроль доступа по IP"
+
+msgid "How it works"
+msgstr "Как это работает"
+
+msgid "Priority rules:"
+msgstr "Правила приоритета:"
+
+msgid "If whitelist exists, ONLY IPs in the whitelist are allowed (whitelist has priority)"
+msgstr "Если белый список существует, разрешены ТОЛЬКО IP из белого списка (белый список имеет приоритет)"
+
+msgid "Blacklisted IPs are blocked regardless of whitelist"
+msgstr "IP из чёрного списка блокируются независимо от белого списка"
+
+msgid "Empty files = no restrictions"
+msgstr "Пустые файлы = без ограничений"
+
+msgid "Whitelist file:"
+msgstr "Файл белого списка:"
+
+msgid "Blacklist file:"
+msgstr "Файл чёрного списка:"
+
+msgid "Whitelist (wip.txt)"
+msgstr "Белый список (wip.txt)"
+
+msgid "Edit Whitelist (Form)"
+msgstr "Редактировать белый список (форма)"
+
+msgid "Add or remove allowed IP addresses and ranges via a convenient form."
+msgstr "Добавление или удаление разрешённых IP-адресов и диапазонов через удобную форму."
+
+msgid "Edit Whitelist (Raw)"
+msgstr "Редактировать белый список (сырой)"
+
+msgid "Edit wip.txt as plain text. Format: <code>[description:]IP[-IP] or just IP</code>. For advanced users."
+msgstr "Редактирование wip.txt как обычного текста. Формат: <code>[описание:]IP[-IP] или просто IP</code>. Для продвинутых пользователей."
+
+msgid "Blacklist (bip.txt)"
+msgstr "Чёрный список (bip.txt)"
+
+msgid "Edit Blacklist (Form)"
+msgstr "Редактировать чёрный список (форма)"
+
+msgid "Add or remove blocked IP addresses and ranges via a convenient form."
+msgstr "Добавление или удаление заблокированных IP-адресов и диапазонов через удобную форму."
+
+msgid "Edit Blacklist (Raw)"
+msgstr "Редактировать чёрный список (сырой)"
+
+msgid "Edit bip.txt as plain text. Format: <code>[description:]IP[-IP] or just IP</code>. For advanced users."
+msgstr "Редактирование bip.txt как обычного текста. Формат: <code>[описание:]IP[-IP] или просто IP</code>. Для продвинутых пользователей."
+
+# ============================================================
+# АУТЕНТИФИКАЦИЯ (РАЗДЕЛ НАСТРОЕК)
+# ============================================================
+
+msgid "Security & Authentication"
+msgstr "Безопасность и аутентификация"
+
+msgid "Enable HTTP authentication on all requests"
+msgstr "Включить HTTP-аутентификацию для всех запросов"
+
+msgid "Enables HTTP Basic Authentication for all API requests and web interface access."
+msgstr "Включает HTTP Basic Authentication для всех API-запросов и доступа к веб-интерфейсу."
+
+msgid "The credentials file is NOT created automatically anymore. Before enabling this option, create the accs.db file with at least one username/password pair using the editors below (\"Edit accs.db (Form)\" or \"Edit accs.db (Raw)\")."
+msgstr "Файл учётных данных больше НЕ создаётся автоматически. Перед включением этой опции создайте файл accs.db хотя бы с одной парой имя пользователя/пароль, используя редакторы ниже (\"Редактировать accs.db (форма)\" или \"Редактировать accs.db (сырой)\")."
+
+msgid "If you enable authentication without a credentials file, TorrServer will demand a login and password, but no valid credentials will exist, and access to the web interface will be impossible until you create accs.db."
+msgstr "Если вы включите аутентификацию без файла учётных данных, TorrServer будет требовать логин и пароль, но действительных учётных данных не будет, и доступ к веб-интерфейсу будет невозможен, пока вы не создадите accs.db."
+
+msgid "Passwords are stored in"
+msgstr "Пароли хранятся в"
+
+msgid "plain text"
+msgstr "открытом виде"
+
+msgid "in"
+msgstr "в"
+
+msgid "The file has strict permissions (600), but anyone with root access to the router can read it. This file"
+msgstr "Файл имеет строгие права доступа (600), но любой с root-доступом к роутеру может его прочитать. Этот файл"
+
+msgid "persists after package removal"
+msgstr "сохраняется после удаления пакета"
+
+msgid "Authentication Credentials"
+msgstr "Учётные данные"
+
+msgid "Edit accs.db (Form)"
+msgstr "Редактировать accs.db (форма)"
+
+msgid "Add, edit, or remove user accounts for HTTP authentication via a convenient form. Format: username + password pairs."
+msgstr "Добавление, редактирование или удаление учётных записей для HTTP-аутентификации через удобную форму. Формат: пары имя пользователя + пароль."
+
+msgid "Edit accs.db (Raw)"
+msgstr "Редактировать accs.db (сырой)"
+
+msgid "Edit accs.db as plain text JSON. Format: <code>{\"login\":\"password\"}</code>. For advanced users."
+msgstr "Редактирование accs.db как обычного текста JSON. Формат: <code>{\"login\":\"password\"}</code>. Для продвинутых пользователей."
+
+msgid "Edit accs.db"
+msgstr "Редактировать accs.db"
+
+msgid "WARNING: This file stores authentication credentials in plain text JSON. Format: {\"login\":\"password\"}. Restart TorrServer after editing."
+msgstr "ВНИМАНИЕ: Этот файл хранит учётные данные в открытом JSON-формате. Формат: {\"login\":\"password\"}. Перезапустите TorrServer после редактирования."
+
+msgid "Allow search without authentication"
+msgstr "Разрешить поиск без аутентификации"
+
+msgid "When enabled, allows search requests (including Torznab searches) without requiring authentication, even when HTTP authentication is enabled for other operations."
+msgstr "При включении разрешает поисковые запросы (включая Torznab) без аутентификации, даже если HTTP-аутентификация включена для других операций."
+
+# ============================================================
+# TELEGRAM БОТ (РАЗДЕЛ НАСТРОЕК)
+# ============================================================
+
+msgid "Telegram Bot"
+msgstr "Telegram-бот"
+
+msgid "Enable Telegram Bot"
+msgstr "Включить Telegram-бота"
+
+msgid "Enable Telegram bot integration for remote control of TorrServer via Telegram."
+msgstr "Включить интеграцию с Telegram-ботом для удалённого управления TorrServer через Telegram."
+
+msgid "When disabled, the bot token is cleared and the bot will not start."
+msgstr "При выключении токен бота очищается и бот не будет запускаться."
+
+msgid "Telegram bot token"
+msgstr "Токен Telegram-бота"
+
+msgid "Token for Telegram bot integration (get it from"
+msgstr "Токен для интеграции с Telegram-ботом (получите его от"
+
+msgid "Warning: the token is visible in the process list (via"
+msgstr "Предупреждение: токен будет виден в списке процессов (через"
+
+msgid ") and stored in"
+msgstr ") и сохранён в"
+
+msgid "Additionally, Telegram bot settings (including WhiteIds/BlackIds) are saved to"
+msgstr "Кроме того, настройки Telegram-бота (включая WhiteIds/BlackIds) сохраняются в"
+
+msgid "in the working directory and"
+msgstr "в рабочем каталоге и"
+
+msgid "persist after package removal"
+msgstr "сохраняются после удаления пакета"
+
+msgid "Telegram bot token is required when Telegram Bot is enabled."
+msgstr "Токен Telegram-бота требуется, когда Telegram-бот включён."
+
+msgid "Edit tg.cfg (Form)"
+msgstr "Редактировать tg.cfg (форма)"
+
+msgid "Telegram bot settings (HostTG, HostWeb, Socks5, WhiteIds, BlackIds) via a convenient form."
+msgstr "Настройки Telegram-бота (HostTG, HostWeb, Socks5, WhiteIds, BlackIds) через удобную форму."
+
+msgid "This file may not exist if Telegram bot is not configured. If the file does not exist, it will be created when you save."
+msgstr "Этот файл может не существовать, если Telegram-бот не настроен. Если файла нет, он будет создан при сохранении."
+
+msgid "Edit tg.cfg (Raw)"
+msgstr "Редактировать tg.cfg (сырой)"
+
+msgid "Edit tg.cfg as plain text (JSON). For advanced users."
+msgstr "Редактирование tg.cfg как обычного текста (JSON). Для продвинутых пользователей."
+
+# ============================================================
+# ТОРРЕНТЫ И КЛИЕНТ
+# ============================================================
+
+msgid "Torrents & Client"
+msgstr "Торренты и клиент"
+
+msgid "Auto-load torrents from directory"
+msgstr "Автозагрузка торрентов из каталога"
+
+msgid "Directory to automatically load .torrent files from. TorrServer will monitor this directory and automatically add new torrent files to the server."
+msgstr "Каталог для автоматической загрузки .torrent-файлов. TorrServer будет отслеживать этот каталог и автоматически добавлять новые .torrent-файлы на сервер."
+
+msgid "TorrServer runs as user"
+msgstr "TorrServer работает от пользователя"
+
+msgid "so any .torrent file placed here must be readable by this user. When copying files manually via SSH/SFTP, ensure at least"
+msgstr "поэтому любой .torrent-файл, помещённый сюда, должен быть доступен для чтения этому пользователю. При копировании файлов вручную через SSH/SFTP убедитесь, что права не менее"
+
+msgid "permissions, or run"
+msgstr "или выполните"
+
+msgid "Without read permissions, TorrServer will silently ignore the file."
+msgstr "Без прав на чтение TorrServer молча проигнорирует файл."
+
+msgid "Torrent client address"
+msgstr "Адрес торрент-клиента"
+
+msgid "Address of external torrent client in format <code>[IP]:PORT</code> (examples: <code>:32000</code>, <code>127.0.0.1:32768</code>). Used when TorrServer needs to communicate with an external BitTorrent client."
+msgstr "Адрес внешнего торрент-клиента в формате <code>[IP]:ПОРТ</code> (примеры: <code>:32000</code>, <code>127.0.0.1:32768</code>). Используется, когда TorrServer должен взаимодействовать с внешним BitTorrent-клиентом."
+
+# ============================================================
+# ПОВЕДЕНИЕ И ФЛАГИ
+# ============================================================
+
+msgid "Behavior & Flags"
+msgstr "Поведение и флаги"
+
+msgid "Auto-restart on crash"
+msgstr "Автоперезапуск при сбое"
+
+msgid "If TorrServer crashes, procd will automatically start it again. Without this, a crashed service stays stopped until you start it manually or reboot. A manual Stop is not affected — procd only respawns unexpected exits."
+msgstr "Если TorrServer упадёт, procd автоматически перезапустит его. Без этой опции упавшая служба останется остановленной, пока вы не запустите её вручную или не перезагрузите систему. Ручная остановка не затрагивается — procd перезапускает только неожиданные завершения."
+
+msgid "Stable-run threshold (seconds)"
+msgstr "Порог стабильной работы (секунды)"
+
+msgid "If the process ran longer than this before crashing, procd resets the crash counter and treats the next crash as a fresh one. Default: 3600 (one hour)."
+msgstr "Если процесс проработал дольше этого времени до сбоя, procd сбрасывает счётчик сбоев и считает следующий сбой новым. По умолчанию: 3600 (один час)."
+
+msgid "Delay before restart (seconds)"
+msgstr "Задержка перед перезапуском (секунды)"
+
+msgid "How long procd waits after a crash before starting TorrServer again. Default: 5."
+msgstr "Сколько procd ждёт после сбоя перед повторным запуском TorrServer. По умолчанию: 5."
+
+msgid "Max fast-crash retries (0 = unlimited)"
+msgstr "Макс. попыток при быстрых сбоях (0 = без ограничений)"
+
+msgid "How many consecutive fast crashes (within the stable-run threshold) procd tolerates before giving up. 0 = keep trying forever. Default: 3."
+msgstr "Сколько последовательных быстрых сбоев (в пределах порога стабильной работы) procd допускает, прежде чем сдаться. 0 = пытаться бесконечно. По умолчанию: 3."
+
+msgid "Max allowed stream size (Bytes)"
+msgstr "Макс. размер потока (байты)"
+
+msgid "Maximum allowed stream size in bytes."
+msgstr "Максимально допустимый размер потока в байтах."
+
+msgid "FUSE mount path"
+msgstr "Путь монтирования FUSE"
+
+msgid "Path to mount torrents via FUSE."
+msgstr "Путь для монтирования торрентов через FUSE."
+
+msgid "Enable WebDAV"
+msgstr "Включить WebDAV"
+
+msgid "Enable WebDAV server for accessing torrents."
+msgstr "Включить WebDAV-сервер для доступа к торрентам."
+
+msgid "Graceful shutdown timeout (seconds)"
+msgstr "Таймаут корректного завершения (секунды)"
+
+msgid "Time in seconds given to TorrServer to shut down gracefully after receiving SIGTERM. If the process does not exit within this period, procd sends SIGKILL. Leave the field empty to use the init.d built-in default of 15 seconds (the option will then be removed from the UCI config). Setting 0 means immediate SIGKILL — the process will have no time to save data."
+msgstr "Время в секундах, даваемое TorrServer для корректного завершения после получения SIGTERM. Если процесс не завершится в течение этого периода, procd отправляет SIGKILL. Оставьте поле пустым, чтобы использовать встроенное значение init.d по умолчанию 15 секунд (опция будет удалена из конфигурации UCI). Установка 0 означает немедленный SIGKILL — процесс не успеет сохранить данные."
+
+msgid "Do not kill server on signal"
+msgstr "Не завершать сервер по сигналу"
+
+msgid "Makes TorrServer ignore stop signals (SIGTERM, SIGINT, SIGHUP, SIGQUIT). <strong>Not recommended under procd:</strong> the Stop/Restart buttons and clean shutdown on reboot will stop working, because procd manages the service via SIGTERM. The server could then only be stopped through its own web UI or with <code>kill -9</code>. Intended for manually started instances."
+msgstr "Заставляет TorrServer игнорировать сигналы остановки (SIGTERM, SIGINT, SIGHUP, SIGQUIT). <strong>Не рекомендуется под procd:</strong> кнопки «Остановить/Перезапустить» и корректное выключение при перезагрузке перестанут работать, так как procd управляет службой через SIGTERM. Сервер можно будет остановить только через его собственный веб-интерфейс или с помощью <code>kill -9</code>. Предназначено для вручную запущенных экземпляров."
+
+# ============================================================
+# СТАТУСЫ ТОРРЕНТОВ (для _() в statusMap после исправления)
+# ============================================================
+
+msgid "Added"
+msgstr "Добавлен"
+
+msgid "Getting Info"
+msgstr "Получение информации"
+
+msgid "Working"
+msgstr "Работает"
+
+msgid "Closed"
+msgstr "Закрыт"
+
+msgid "In DB"
+msgstr "В БД"
+
+# ============================================================
+# РАЗНОЕ
+# ============================================================
+
+msgid "127.0.0.1:1080 or socks5://user:pass@host:port"
+msgstr "127.0.0.1:1080 или socks5://user:pass@host:port"
+
+msgid "failed"
+msgstr "ошибок"
+
+msgid "Starting download:"
+msgstr "Начало загрузки:"
+
+msgid "Use the \"Fix File Permissions\" button below to automatically correct permissions for all known files."
+msgstr "Используйте кнопку «Исправить права доступа к файлам» ниже для автоматического исправления прав для всех известных файлов."
+
+msgid "(owner-only, contains passwords)"
+msgstr "(только владелец, содержит пароли)"
+
+msgid "B"
+msgstr "Б"
+
+msgid "GB"
+msgstr "ГБ"
+
+msgid "B/s"
+msgstr "Б/с"
+
+msgid "KB/s"
+msgstr "КБ/с"
+
+msgid "MB/s"
+msgstr "МБ/с"
+
+msgid "Mbps"
+msgstr "Мбит/с"
+
+msgid "Optional Dependencies"
+msgstr "Опциональные зависимости"
+
+msgid "Missing optional packages:"
+msgstr "Отсутствуют опциональные пакеты:"
+
+msgid "Required for HTTPS connections to external services (TMDB, Telegram, trackers). Install via:"
+msgstr "Требуется для HTTPS-соединений с внешними сервисами (TMDB, Telegram, трекеры). Установить через:"
+
+msgid "Required for FUSE mounting of torrents. Install via:"
+msgstr "Требуется для монтирования торрентов через FUSE. Установить через:"
+
+msgid "Required for media file probing (Probe button). Install via:"
+msgstr "Требуется для анализа медиафайлов (кнопка Probe). Установить через:"
+
+msgid "fuse-utils package is not installed. FUSE mounting will not work."
+msgstr "Пакет fuse-utils не установлен. Монтирование FUSE не будет работать."
+
+msgid "Install via:"
+msgstr "Установить через:"
+
+msgid "Requires ffprobe package. Install via: opkg install ffprobe"
+msgstr "Требуется пакет ffprobe. Установить через: opkg install ffprobe"
+
+msgid "Probe (N/A)"
+msgstr "Probe (Н/Д)"
+
+msgid "Checking…"
+msgstr "Проверка…"
+
+msgid "BBolt database size (config.db):"
+msgstr "Размер базы данных BBolt (config.db):"
+
+msgid "Copy whole log to clipboard"
+msgstr "Копировать весь лог в буфер обмена"
+
+msgid "Log copied to clipboard."
+msgstr "Лог скопирован в буфер обмена."
+
+msgid "Copy failed. Please select text manually."
+msgstr "Не удалось скопировать. Выделите текст вручную."
+
+msgid "Show startup errors log"
+msgstr "Показать журнал ошибок запуска"
+
+msgid "Log is empty."
+msgstr "Журнал пуст."

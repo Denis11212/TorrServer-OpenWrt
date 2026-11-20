@@ -1,0 +1,36 @@
+{
+  "luci-app-torrserver": {
+    "description": "Grant access to TorrServer via rpcd plugin",
+    "read": {
+      "uci": [ "torrserver" ],
+      "ubus": {
+        "torrserver": [
+          "load",
+          "status",
+          "check_tools",
+          "process_raw",
+          "version_bin",
+          "disk",
+          "file_list",
+          "file_read",
+          "log_read",
+          "user_info",
+          "list_mounts",
+          "active_streams"
+        ]
+      }
+    },
+    "write": {
+      "uci": [ "torrserver" ],
+      "ubus": {
+        "torrserver": [
+          "service",
+          "file_write",
+          "fix_permissions",
+          "backup_save",
+          "backup_restore"
+        ]
+      }
+    }
+  }
+}

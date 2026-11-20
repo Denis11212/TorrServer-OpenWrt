@@ -1,0 +1,14 @@
+# Build artifacts
+*.ipk
+*.o
+*.lmo
+
+# Editor
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+

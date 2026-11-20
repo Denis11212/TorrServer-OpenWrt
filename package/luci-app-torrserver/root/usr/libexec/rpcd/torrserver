@@ -1,0 +1,1165 @@
+#!/bin/sh
+
+export PATH=/usr/sbin:/usr/bin:/sbin:/bin
+
+. /usr/share/libubox/jshn.sh
+
+TS_USER="torrserver"
+TS_GROUP="torrserver"
+TS_BIN="/usr/bin/torrserver"
+MAX_FILE=262144
+MAX_LOG=262144
+
+json_error() {
+    json_init
+    json_add_boolean ok 0
+    json_add_string error "$1"
+    json_dump
+    exit 0
+}
+
+cfg_get() {
+    local val
+    val="$(uci -q get "torrserver.global.$1" 2>/dev/null)"
+    [ -n "$val" ] || val="$(uci -q get "torrserver.@torrserver[0].$1" 2>/dev/null)"
+    printf '%s' "$val"
+}
+
+cfg_path() {
+    local p
+    p="$(cfg_get path)"
+    [ -n "$p" ] || p="/var/etc/torrserver"
+    printf '%s' "${p%/}"
+}
+
+is_num() {
+    case "$1" in
+        ''|*[!0-9]*) return 1 ;;
+        *) return 0 ;;
+    esac
+}
+
+
+strip_ansi() {
+    # Удаляет ANSI escape-коды (цвета терминала) из stdin
+    # Шаг 1: tr удаляет сам ESC-символ (байт 0x1B)
+    # Шаг 2: sed удаляет ANSI-последовательности вида [XXm где XX - цифры
+    # Это НЕ тронет [Recovery], [Info], [Error] — там после [ идёт буква
+    tr -d '\033' | sed 's/\[[0-9][0-9;]*[a-zA-Z]//g'
+}
+
+
+get_file_size() {
+    local f="$1" sz
+    if [ -f "$f" ]; then
+        sz="$(wc -c < "$f" 2>/dev/null | tr -d ' ')"
+        is_num "$sz" && printf '%s' "$sz" && return
+        printf '0'
+    else
+        printf '%s' "-1"
+    fi
+}
+
+get_file_mtime() {
+    local f="$1" mt
+    [ -e "$f" ] || { printf '0'; return; }
+    mt="$(date -r "$f" +%s 2>/dev/null)" && is_num "$mt" && { printf '%s' "$mt"; return; }
+    printf '0'
+}
+
+get_file_uid() {
+    local f="$1" uid
+    [ -e "$f" ] || { printf '%s' "-1"; return; }
+    uid="$(ls -ldn "$f" 2>/dev/null | awk '{print $3}')"
+    is_num "$uid" && printf '%s' "$uid" && return
+    printf '%s' "-1"
+}
+
+
+denied_path() {
+    local p="$1" rp d base
+    [ -n "$p" ] || return 0
+
+    case "$p" in
+        /*) ;;
+        *) return 0 ;;
+    esac
+    case "$p" in
+        *".."*) return 0 ;;
+    esac
+
+    if [ -e "$p" ]; then
+        rp="$(readlink -f "$p" 2>/dev/null)" || rp="$p"
+    else
+        d="$p"
+        while [ ! -e "$d" ] && [ "$d" != "/" ]; do
+            d="${d%/*}"
+            [ -n "$d" ] || d="/"
+        done
+        if [ -e "$d" ]; then
+            rp="$(readlink -f "$d" 2>/dev/null)/${p##*/}"
+        else
+            rp="$p"
+        fi
+    fi
+
+    base="$(cfg_path)"
+    if [ -e "$base" ]; then
+        base="$(readlink -f "$base" 2>/dev/null)" || base="$(cfg_path)"
+        case "$rp" in
+            "$base"|"$base"/*) return 1 ;;
+        esac
+    fi
+
+    case "$rp" in
+        /etc/shadow|/etc/passwd|/etc/group|/etc/gshadow) return 0 ;;
+        /etc/opkg|/etc/opkg/*) return 0 ;;
+        /etc/config/rpcd) return 0 ;;
+        /etc/init.d|/etc/init.d/*) return 0 ;;
+        /etc/rc.d|/etc/rc.d/*) return 0 ;;
+        /proc|/proc/*) return 0 ;;
+        /sys|/sys/*) return 0 ;;
+        /dev|/dev/*) return 0 ;;
+        /usr/libexec/rpcd|/usr/libexec/rpcd/*) return 0 ;;
+        /var/run/ubus|/var/run/ubus/*) return 0 ;;
+    esac
+
+    return 1
+}
+
+safe_path() {
+    if denied_path "$1"; then
+        return 1
+    fi
+    printf '%s' "$1"
+    return 0
+}
+
+known_file() {
+    local name="$1" base p
+    base="$(cfg_path)"
+    case "$name" in
+        settings) p="$base/settings.json" ;;
+        viewed)   p="$base/viewed.json" ;;
+        accs)     p="$base/accs.db" ;;
+        wip)      p="$base/wip.txt" ;;
+        bip)      p="$base/bip.txt" ;;
+        tg)       p="$base/tg.cfg" ;;
+        config)   p="$base/config.db" ;;
+        log)      p="$(cfg_get logpath)" ;;
+        weblog)   p="$(cfg_get weblogpath)" ;;
+        *) return 1 ;;
+    esac
+    [ -n "$p" ] || return 1
+    safe_path "$p"
+}
+
+writable_file() {
+    case "$1" in
+        settings|viewed|accs|wip|bip|tg) known_file "$1" ;;
+        *) return 1 ;;
+    esac
+}
+
+
+get_pid() {
+    local p pid target
+    if command -v pgrep >/dev/null 2>&1; then
+ #       pid="$(pgrep -x "torrserver" 2>/dev/null | head -n1)"
+        pid="$(pgrep -x "$TS_BIN" 2>/dev/null)"
+        if [ -n "$pid" ]; then
+            printf '%s' "$pid"
+            return
+        fi
+    fi
+
+    for p in /proc/[0-9]*/exe; do
+        [ -e "$p" ] || continue
+        target="$(readlink "$p" 2>/dev/null)"
+        if [ "$target" = "$TS_BIN" ]; then
+            pid="${p#/proc/}"
+            pid="${pid%%/*}"
+            printf '%s' "$pid"
+            return
+        fi
+    done
+    printf ''
+}
+
+get_version_bin() {
+    "$TS_BIN" --version 2>/dev/null | head -n1
+}
+
+get_process_info() {
+    local pid uid user cmdline rss rest ticks starttime upt hz cores
+    local mem_total mem_avail proc_uptime cpu_pct
+    pid=$(get_pid)
+    if [ -z "$pid" ] || [ ! -r "/proc/$pid/stat" ]; then
+        printf ''
+        return
+    fi
+
+    uid=$(awk '/^Uid:/{print $2}' "/proc/$pid/status" 2>/dev/null)
+    user=$(awk -F: -v u="$uid" '$3==u{print $1;exit}' /etc/passwd 2>/dev/null)
+    [ -n "$user" ] || user="${uid:-unknown}"
+    cmdline=$(tr '\000' ' ' < "/proc/$pid/cmdline" 2>/dev/null)
+    rss=$(awk '/^VmRSS:/{print $2}' "/proc/$pid/status" 2>/dev/null)
+    rest=$(sed 's/.*) //' "/proc/$pid/stat" 2>/dev/null)
+    ticks=$(printf '%s' "$rest" | awk '{print $12+$13}')
+    starttime=$(printf '%s' "$rest" | awk '{print $20}')
+    upt=$(awk '{printf "%d",$1}' /proc/uptime 2>/dev/null)
+    hz=$(getconf CLK_TCK 2>/dev/null || echo 100)
+    cores=$(grep -c "^processor" /proc/cpuinfo 2>/dev/null || echo 1)
+    mem_total=$(awk '/^MemTotal:/{print $2}' /proc/meminfo 2>/dev/null || echo 0)
+    mem_avail=$(awk '/^MemAvailable:/{print $2}' /proc/meminfo 2>/dev/null || echo 0)
+
+    starttime=${starttime:-0}
+    upt=${upt:-0}
+    hz=${hz:-100}
+    [ "$hz" -eq 0 ] && hz=100
+    proc_uptime=$((upt - starttime / hz))
+
+    cpu_pct=0
+    if [ -n "$ticks" ] && [ "$proc_uptime" -gt 0 ] && [ "$cores" -gt 0 ]; then
+        cpu_pct=$((ticks * 100 / (proc_uptime * hz * cores)))
+        [ "$cpu_pct" -gt 100 ] && cpu_pct=100
+    fi
+
+    printf "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" \
+        "$pid" "$user" "${rss:-0}" "$ticks" "$starttime" "$upt" "$hz" \
+        "$cores" "$mem_total" "$mem_avail" "$proc_uptime" "$cpu_pct" "$cmdline"
+}
+
+# ==================== SECURITY: PERMISSIONS ====================
+
+fix_single_file() {
+    local f="$1" mode="$2"
+    local ts_uid fuid
+
+    [ -f "$f" ] || return 0
+    [ -L "$f" ] && return 0
+
+    ts_uid="$(id -u "$TS_USER" 2>/dev/null)" || return 1
+    fuid="$(get_file_uid "$f")"
+
+    if [ "$fuid" = "$ts_uid" ]; then
+        chmod "$mode" "$f" 2>/dev/null
+    fi
+}
+
+fix_permissions() {
+    local base f mode
+    local ts_uid dir_uid
+
+    ts_uid="$(id -u "$TS_USER" 2>/dev/null)" || return 1
+    base="$(cfg_path)"
+
+    if [ -d "$base" ] && [ ! -L "$base" ]; then
+        dir_uid="$(get_file_uid "$base")"
+        if [ "$dir_uid" = "$ts_uid" ]; then
+            chmod 750 "$base" 2>/dev/null
+        fi
+    fi
+
+    for f in config.db accs.db; do
+        fix_single_file "$base/$f" 600
+    done
+
+    for f in settings.json viewed.json tg.cfg wip.txt bip.txt; do
+        fix_single_file "$base/$f" 640
+    done
+
+    for f in "$(cfg_get logpath)" "$(cfg_get weblogpath)"; do
+        [ -n "$f" ] && fix_single_file "$f" 640
+    done
+}
+
+# ==================== STARTUP DIAGNOSTICS ====================
+
+get_startup_errors() {
+    local errors="" sys_errs file_errs logp
+
+    sys_errs="$(logread -e "torrserver" 2>/dev/null)"
+
+    # Берём ВСЁ после маркера (включая саму строку с маркером)
+    if printf '%s\n' "$sys_errs" | grep -q "=== TORRSERVER START ATTEMPT"; then
+        sys_errs="$(printf '%s\n' "$sys_errs" | awk '
+            /=== TORRSERVER START ATTEMPT/ { found=1; buf="" }
+            found { buf = buf $0 "\n" }
+            END { if (buf) printf "%s", buf }
+        ')"
+    else
+        # Fallback: берём последние 4096 байт, если маркер не найден
+        sys_errs="$(printf '%s' "$sys_errs" | tail -c 4096)"
+    fi
+
+    # Удаляем ANSI escape-коды
+    if [ -n "$sys_errs" ]; then
+        sys_errs="$(printf '%s' "$sys_errs" | strip_ansi)"
+    fi
+
+    # Ограничиваем размер (32KB достаточно для любого лога)
+    local max_size=32768
+    if [ "${#sys_errs}" -gt "$max_size" ]; then
+        sys_errs="$(printf '%s' "$sys_errs" | tail -c "$max_size")"
+    fi
+
+    [ -n "$sys_errs" ] && errors="$sys_errs"
+
+    # Файловый лог (если включён)
+    logp="$(cfg_get logpath)"
+    if [ -n "$logp" ] && [ -f "$logp" ]; then
+        file_errs="$(tail -c 4096 "$logp" 2>/dev/null)"
+        if [ -n "$file_errs" ]; then
+            file_errs="$(printf '%s' "$file_errs" | strip_ansi)"
+            if [ -n "$errors" ]; then
+                errors="${errors}
+
+=== File log: $logp ===
+${file_errs}"
+            else
+                errors="$file_errs"
+            fi
+        fi
+    fi
+
+    printf '%s' "$errors"
+}
+
+# ==================== ACTIVE STREAMS ====================
+
+get_active_streams() {
+    local pid out=""
+    pid=$(get_pid)
+    [ -n "$pid" ] || return 0
+
+    if command -v ss >/dev/null 2>&1; then
+        out="$(ss -tnp 2>/dev/null | grep "pid=$pid," | tail -n 50)"
+    elif command -v netstat >/dev/null 2>&1; then
+        out="$(netstat -tnp 2>/dev/null | grep "$pid/torrserver" | tail -n 50)"
+    fi
+
+    printf '%s' "$out"
+}
+
+# ==================== get_system_cpu ====================
+
+get_system_cpu() {
+    local cpu user nice system idle iowait irq softirq steal rest
+
+    [ -r /proc/stat ] || return 1
+
+    if ! read -r cpu user nice system idle iowait irq softirq steal rest < /proc/stat; then
+        return 1
+    fi
+
+    printf '%s|%s|%s|%s|%s|%s|%s|%s' \
+        "${user:-0}" "${nice:-0}" "${system:-0}" "${idle:-0}" \
+        "${iowait:-0}" "${irq:-0}" "${softirq:-0}" "${steal:-0}"
+}
+
+# ==================== RPC METHODS ====================
+
+method_user_info() {
+    local u="${1:-$TS_USER}"
+    local id_out uid uname gid gname groups_str
+
+    id_out="$(id "$u" 2>/dev/null)"
+    if [ -z "$id_out" ]; then
+        json_error "user not found"
+    fi
+
+    uid="${id_out#uid=}"
+    uid="${uid%%(*}"
+    uname="${id_out#*uid=*(}"
+    uname="${uname%%)*}"
+
+    gid="${id_out#*gid=}"
+    gid="${gid%%(*}"
+    gname="${id_out#*gid=*(}"
+    gname="${gname%%)*}"
+
+    json_init
+    json_add_boolean ok 1
+    json_add_string user "$uname"
+    is_num "$uid" && json_add_int uid "$uid"
+    json_add_string group "$gname"
+    is_num "$gid" && json_add_int gid "$gid"
+
+    json_add_array groups
+    if printf '%s' "$id_out" | grep -q "groups="; then
+        groups_str="${id_out#*groups=}"
+        local OLD_IFS="$IFS"
+        IFS=","
+        for item in $groups_str; do
+            local gg gn
+            gg="${item%%(*}"
+            gn="${item#*(}"
+            gn="${gn%)}"
+            json_add_object ""
+            json_add_string name "$gn"
+            is_num "$gg" && json_add_int gid "$gg"
+            json_close_object
+        done
+        IFS="$OLD_IFS"
+    fi
+    json_close_array
+    json_dump
+}
+
+method_load() {
+    local running=0 enabled=0 raw version path errs pid
+    /etc/init.d/torrserver status >/dev/null 2>&1 && running=1
+    /etc/init.d/torrserver enabled >/dev/null 2>&1 && enabled=1
+    raw="$(get_process_info)"
+    version="$(get_version_bin)"
+    path="$(cfg_path)"
+    pid="$(get_pid)"
+
+    json_init
+    json_add_boolean ok 1
+
+    json_add_object service
+    json_add_boolean running "$running"
+    json_add_boolean enabled "$enabled"
+    if [ -n "$pid" ]; then
+        json_add_int pid "$pid"
+    fi
+    json_add_string path "$path"
+    json_add_string version_bin "$version"
+    json_close_object
+
+    json_add_object proc
+    if [ -n "$raw" ]; then
+        json_add_boolean available 1
+        local OLD_IFS="$IFS"
+        IFS="|"
+        set -- $raw
+        IFS="$OLD_IFS"
+        json_add_int pid "${1:-0}"
+        json_add_string user "${2:-unknown}"
+        json_add_int rss_kb "${3:-0}"
+        json_add_int cpu_ticks "${4:-0}"
+        json_add_int cores "${8:-1}"
+        json_add_int mem_total_kb "${9:-0}"
+        json_add_int mem_avail_kb "${10:-0}"
+        json_add_int uptime_sec "${11:-0}"
+        json_add_int cpu_pct "${12:-0}"
+        json_add_string cmdline "${13:-}"
+    else
+        json_add_boolean available 0
+        json_add_string reason "not_running"
+        json_add_string detail "TorrServer process not found"
+    fi
+    json_close_object
+
+    local syscpu OLD_IFS_SYS
+
+    syscpu="$(get_system_cpu)"
+
+    json_add_object system_cpu
+    if [ -n "$syscpu" ]; then
+        json_add_boolean available 1
+
+        OLD_IFS_SYS="$IFS"
+        IFS="|"
+        set -- $syscpu
+        IFS="$OLD_IFS_SYS"
+
+        json_add_int user    "${1:-0}"
+        json_add_int nice    "${2:-0}"
+        json_add_int system  "${3:-0}"
+        json_add_int idle    "${4:-0}"
+        json_add_int iowait  "${5:-0}"
+        json_add_int irq     "${6:-0}"
+        json_add_int softirq "${7:-0}"
+        json_add_int steal   "${8:-0}"
+    else
+        json_add_boolean available 0
+    fi
+    json_close_object
+
+    if [ "$running" -eq 0 ]; then
+        errs="$(get_startup_errors)"
+        [ -n "$errs" ] && json_add_string startup_errors "$errs"
+    fi
+
+    json_dump
+}
+
+method_status() {
+    local running=0 enabled=0 errs pid
+    /etc/init.d/torrserver status >/dev/null 2>&1 && running=1
+    /etc/init.d/torrserver enabled >/dev/null 2>&1 && enabled=1
+    pid="$(get_pid)"
+
+    json_init
+    json_add_boolean ok 1
+    json_add_boolean running "$running"
+    json_add_boolean enabled "$enabled"
+    if [ -n "$pid" ]; then
+        json_add_int pid "$pid"
+    fi
+    json_add_string path "$(cfg_path)"
+
+    if [ "$running" -eq 0 ]; then
+        errs="$(get_startup_errors)"
+        [ -n "$errs" ] && json_add_string startup_errors "$errs"
+    fi
+
+    json_dump
+}
+
+method_service() {
+    local action="$1" rc=1
+    case "$action" in
+        start|stop|restart|enable|disable)
+            "/etc/init.d/torrserver" "$action" >/dev/null 2>&1
+            rc=$?
+            if [ "$rc" -eq 0 ]; then
+                case "$action" in
+                    start|restart)
+                        sleep 1
+                        fix_permissions >/dev/null 2>&1
+                        ;;
+                esac
+            fi
+            ;;
+        *)
+            json_error "unsupported action"
+            ;;
+    esac
+    json_init
+    if [ "$rc" -eq 0 ]; then
+        json_add_boolean ok 1
+    else
+        json_add_boolean ok 0
+    fi
+    json_add_int rc "$rc"
+    json_dump
+}
+
+method_version_bin() {
+    local v
+    v="$(get_version_bin)"
+    json_init
+    json_add_boolean ok 1
+    json_add_string stdout "$v"
+    json_dump
+}
+
+method_disk() {
+    local p d out
+    local config_size=-1 settings_size=-1 viewed_size=-1 accs_size=-1
+    p="$(cfg_path)"
+    d="$p"
+    while [ ! -d "$d" ] && [ "$d" != "/" ]; do
+        d="${d%/*}"
+        [ -n "$d" ] || d="/"
+    done
+    [ -d "$d" ] || d="/"
+    out="$(df -h "$d" 2>/dev/null)"
+    [ -f "$p/config.db" ] && config_size="$(get_file_size "$p/config.db")"
+    [ -f "$p/settings.json" ] && settings_size="$(get_file_size "$p/settings.json")"
+    [ -f "$p/viewed.json" ] && viewed_size="$(get_file_size "$p/viewed.json")"
+    [ -f "$p/accs.db" ] && accs_size="$(get_file_size "$p/accs.db")"
+    json_init
+    json_add_boolean ok 1
+    json_add_string path "$p"
+    json_add_string df_stdout "$out"
+    json_add_int config_size "$config_size"
+    json_add_int settings_size "$settings_size"
+    json_add_int viewed_size "$viewed_size"
+    json_add_int accs_size "$accs_size"
+    json_dump
+}
+
+method_file_list() {
+    local base f size mtime
+    base="$(cfg_path)"
+    [ -d "$base" ] || json_error "directory not found"
+    json_init
+    json_add_boolean ok 1
+    json_add_array files
+    for f in "$base"/*; do
+        [ -e "$f" ] || continue
+        json_add_object ""
+        json_add_string name "$(basename "$f")"
+        if [ -d "$f" ]; then
+            json_add_string type directory
+        else
+            json_add_string type file
+            size="$(get_file_size "$f")"
+            is_num "$size" && json_add_int size "$size"
+        fi
+        mtime="$(get_file_mtime "$f")"
+        is_num "$mtime" && json_add_int mtime "$mtime"
+        json_close_object
+    done
+    json_close_array
+    json_dump
+}
+
+method_file_read() {
+    local name="$1" f size content
+    [ -n "$name" ] || json_error "name required"
+    f="$(known_file "$name")" || json_error "unknown or denied file"
+    if [ ! -f "$f" ]; then
+        json_init
+        json_add_boolean ok 1
+        json_add_boolean exists 0
+        json_add_string content ""
+        json_dump
+        return
+    fi
+    size="$(get_file_size "$f")"
+    is_num "$size" || size=0
+    [ "$size" -le "$MAX_FILE" ] || json_error "file too large"
+    content="$(cat "$f"; printf x)"
+    content="${content%x}"
+    json_init
+    json_add_boolean ok 1
+    json_add_boolean exists 1
+    json_add_int size "$size"
+    json_add_string content "$content"
+    json_dump
+}
+
+method_file_write() {
+    local name="$1" content="$2" f dir mode tmp_f
+    [ -n "$name" ] || json_error "name required"
+    f="$(writable_file "$name")" || json_error "file is not writable"
+    dir="${f%/*}"
+
+    if [ ! -d "$dir" ]; then
+        mkdir -p "$dir" 2>/dev/null || json_error "cannot create directory"
+    fi
+
+    safe_path "$f" >/dev/null || json_error "path denied"
+
+    tmp_f="${f}.tmp.$$"
+
+    printf '%s' "$content" > "$tmp_f" || { rm -f "$tmp_f"; json_error "write failed"; }
+
+    if [ -e "$f" ]; then
+        [ -L "$f" ] && { rm -f "$tmp_f"; json_error "cannot write to symlink"; }
+        local fuid ts_uid
+        fuid="$(get_file_uid "$f")"
+        ts_uid="$(id -u "$TS_USER" 2>/dev/null)"
+        if [ "$fuid" != "$ts_uid" ]; then
+            rm -f "$tmp_f"
+            json_error "file not owned by $TS_USER (uid=$fuid)"
+        fi
+    fi
+
+    chown -h "$TS_USER:$TS_GROUP" "$tmp_f" 2>/dev/null
+
+    case "$name" in
+        accs|config) mode=600 ;;
+        *)           mode=640 ;;
+    esac
+    chmod "$mode" "$tmp_f" 2>/dev/null
+
+    mv -f "$tmp_f" "$f" 2>/dev/null || { rm -f "$tmp_f"; json_error "move failed"; }
+
+    json_init
+    json_add_boolean ok 1
+    json_add_string path "$f"
+    json_dump
+}
+
+method_log_read() {
+    local name="$1" offset="$2" limit="$3"
+    local f size chunk chunk_len next
+    [ -n "$name" ] || json_error "name required"
+    is_num "$offset" || offset=0
+    is_num "$limit" || limit=65536
+    [ "$limit" -gt "$MAX_LOG" ] && limit="$MAX_LOG"
+
+    if [ "$name" = "syslog" ]; then
+        chunk="$(logread -e "torrserver" 2>/dev/null | tail -c "$MAX_LOG")"
+        if [ -n "$chunk" ]; then
+            # Удаляем потенциально обрезанную первую строку
+            chunk="$(printf '%s\n' "$chunk" | sed '1{/^[A-Z][a-z][a-z] /!d}')"
+            # Удаляем ANSI escape-коды (цвета терминала)
+            chunk="$(printf '%s' "$chunk" | strip_ansi)"
+        fi
+        json_init
+        json_add_boolean ok 1
+        json_add_boolean exists 1
+        json_add_string content "$chunk"
+        json_dump
+        return
+    fi
+
+    case "$name" in
+        log|weblog) ;;
+        *) json_error "unknown log" ;;
+    esac
+    f="$(known_file "$name")" || json_error "unknown log"
+    if [ ! -f "$f" ]; then
+        json_init
+        json_add_boolean ok 1
+        json_add_boolean exists 0
+        json_add_string content ""
+        json_add_int size 0
+        json_add_int next 0
+        json_dump
+        return
+    fi
+    size="$(get_file_size "$f")"
+    is_num "$size" || size=0
+    [ "$offset" -gt "$size" ] && offset=0
+    chunk=""
+    if [ "$size" -gt "$offset" ]; then
+        chunk="$(tail -c +$((offset + 1)) "$f" 2>/dev/null | head -c "$limit")"
+    fi
+    chunk_len=$(printf '%s' "$chunk" | wc -c 2>/dev/null | tr -d ' ')
+    is_num "$chunk_len" || chunk_len=0
+    next=$((offset + chunk_len))
+    [ "$next" -gt "$size" ] && next="$size"
+    json_init
+    json_add_boolean ok 1
+    json_add_boolean exists 1
+    json_add_int size "$size"
+    json_add_int next "$next"
+    json_add_string content "$chunk"
+    json_dump
+}
+
+method_fix_permissions() {
+    fix_permissions 2>/dev/null
+    json_init
+    json_add_boolean ok 1
+    json_add_string message "Permissions applied for $(cfg_path)"
+    json_dump
+}
+
+method_list_mounts() {
+    local tmp_file="/tmp/.torr_mounts_$$"
+    json_init
+    json_add_boolean ok 1
+    json_add_array mounts
+
+    df -P 2>/dev/null | awk 'NR>1 && $6 ~ /^\/(mnt|media|overlay|tmp|home|opt|srv)/ {print $6"\t"$2"\t"$4"\t"$5}' > "$tmp_file"
+
+    while IFS="$(printf '\t')" read -r mpath msize mavail muse; do
+        [ -n "$mpath" ] || continue
+        json_add_object ""
+        json_add_string path "$mpath"
+        json_add_string size "$msize"
+        json_add_string avail "$mavail"
+        json_add_string used "$muse"
+        json_close_object
+    done < "$tmp_file"
+
+    rm -f "$tmp_file"
+    json_close_array
+    json_dump
+}
+
+method_backup_save() {
+    local target_dir="$1"
+    local base archive ts rc files_to_backup f
+    base="$(cfg_path)"
+    [ -d "$base" ] || json_error "base dir not found"
+    [ -n "$target_dir" ] || json_error "target_dir required"
+    safe_path "$target_dir" >/dev/null || json_error "target dir denied"
+
+    if [ ! -d "$target_dir" ]; then
+        mkdir -p "$target_dir" 2>/dev/null || json_error "cannot create target dir"
+    fi
+
+    ts="$(date +%Y%m%d_%H%M%S)"
+    archive="$target_dir/torrserver_backup_${ts}.tar.gz"
+
+    files_to_backup=""
+    for f in config.db settings.json viewed.json accs.db wip.txt bip.txt tg.cfg; do
+        [ -f "$base/$f" ] && files_to_backup="$files_to_backup $f"
+    done
+
+    [ -n "$files_to_backup" ] || json_error "no files to backup"
+
+    tar -cf - -C "$base" $files_to_backup 2>/dev/null | gzip > "$archive"
+    rc=$?
+
+    if [ "$rc" -eq 0 ] && [ -f "$archive" ]; then
+        chown -h "$TS_USER:$TS_GROUP" "$archive" 2>/dev/null
+        chmod 640 "$archive" 2>/dev/null
+        json_init
+        json_add_boolean ok 1
+        json_add_string path "$archive"
+        json_add_int size "$(get_file_size "$archive")"
+        json_add_string files "$files_to_backup"
+        json_dump
+    else
+        rm -f "$archive"
+        json_error "failed to create archive"
+    fi
+}
+
+method_backup_restore() {
+    local archive_path="$1"
+    local base rc bad_files
+    base="$(cfg_path)"
+    [ -f "$archive_path" ] || json_error "archive not found"
+    safe_path "$archive_path" >/dev/null || json_error "archive path denied"
+
+    bad_files="$(gzip -dc "$archive_path" 2>/dev/null | tar -tf - 2>/dev/null | grep -E '^(/|\.\.)|/\.\./|/\.\.$')"
+    if [ -n "$bad_files" ]; then
+        json_error "archive contains unsafe paths (path traversal attempt)"
+    fi
+
+    /etc/init.d/torrserver stop >/dev/null 2>&1
+    sleep 2
+
+    gzip -dc "$archive_path" 2>/dev/null | tar -xf - -C "$base" 2>/dev/null
+    rc=$?
+
+    fix_permissions
+
+    /etc/init.d/torrserver start >/dev/null 2>&1
+
+    json_init
+    if [ "$rc" -eq 0 ]; then
+        json_add_boolean ok 1
+    else
+        json_add_boolean ok 0
+    fi
+    json_add_int rc "$rc"
+    json_dump
+}
+
+method_check_tools() {
+	json_init
+	json_add_boolean ok 1
+	if command -v ffprobe >/dev/null 2>&1; then
+		json_add_boolean ffprobe 1
+	else
+		json_add_boolean ffprobe 0
+	fi
+	if command -v fusermount >/dev/null 2>&1; then
+		json_add_boolean fuse 1
+	else
+		json_add_boolean fuse 0
+	fi
+	if [ -d /etc/ssl/certs ] || [ -f /etc/ssl/certs/ca-certificates.crt ]; then
+		json_add_boolean ca_bundle 1
+	else
+		json_add_boolean ca_bundle 0
+	fi
+	json_dump
+}
+
+method_active_streams() {
+    local out tmp_file count state local_addr remote_addr line first_field
+    out="$(get_active_streams)"
+
+    json_init
+    json_add_boolean ok 1
+
+    if [ -z "$out" ]; then
+        json_add_array streams
+        json_close_array
+        json_add_int count 0
+        json_add_string message "No active connections or process not running"
+        json_dump
+        return
+    fi
+
+    tmp_file="/tmp/.torr_streams_$$"
+    printf '%s\n' "$out" > "$tmp_file"
+
+    count=0
+    json_add_array streams
+
+    while IFS= read -r line; do
+        [ -n "$line" ] || continue
+
+        first_field=$(printf '%s' "$line" | awk '{print $1}')
+
+        case "$first_field" in
+            tcp|tcp6|udp|udp6)
+                state=$(printf '%s' "$line" | awk '{print $6}')
+                local_addr=$(printf '%s' "$line" | awk '{print $4}')
+                remote_addr=$(printf '%s' "$line" | awk '{print $5}')
+                ;;
+            *)
+                state=$(printf '%s' "$line" | awk '{print $1}')
+                local_addr=$(printf '%s' "$line" | awk '{print $4}')
+                remote_addr=$(printf '%s' "$line" | awk '{print $5}')
+                ;;
+        esac
+
+        json_add_object ""
+        json_add_string state "$state"
+        json_add_string local "$local_addr"
+        json_add_string remote "$remote_addr"
+        json_add_string raw "$line"
+        json_close_object
+        count=$((count + 1))
+    done < "$tmp_file"
+
+    rm -f "$tmp_file"
+    json_close_array
+    json_add_int count "$count"
+    json_dump
+}
+
+# ==================== EXTENDED METHODS ====================
+
+method_system_info() {
+    local hostname model firmware cpu_mem
+    hostname="$(uci -q get system.@system[0].hostname 2>/dev/null)"
+    [ -n "$hostname" ] || hostname="$(cat /proc/sys/kernel/hostname 2>/dev/null)"
+    model="$(cat /tmp/sysinfo/model 2>/dev/null)"
+    [ -n "$model" ] || model="unknown"
+    firmware="$(grep DISTRIB_RELEASE /etc/openwrt_release 2>/dev/null | cut -d= -f2 | tr -d "'")"
+    cpu_mem="$(awk '/^MemTotal:/{t=$2} /^MemAvailable:/{a=$2} END{printf "%d %d", t, a}' /proc/meminfo 2>/dev/null)"
+
+    json_init
+    json_add_boolean ok 1
+    json_add_string hostname "${hostname:-OpenWrt}"
+    json_add_string model "$model"
+    json_add_string firmware "${firmware:-unknown}"
+    json_add_int mem_total_kb "$(printf '%s' "$cpu_mem" | awk '{print $1}')"
+    json_add_int mem_avail_kb "$(printf '%s' "$cpu_mem" | awk '{print $2}')"
+    json_add_string uptime "$(awk '{printf "%d", $1}' /proc/uptime 2>/dev/null)"
+    json_add_string loadavg "$(cut -d' ' -f1-3 /proc/loadavg 2>/dev/null)"
+    json_dump
+}
+
+# ==================== BASE64 ENCODER ====================
+b64_encode() {
+    printf '%s' "$1" | awk '
+    BEGIN {
+        b="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+        for(i=0;i<256;i++) ord[sprintf("%c",i)]=i
+    }
+    {
+        len=length($0)
+        for(i=1;i<=len;i+=3) {
+            c1=ord[substr($0,i,1)]
+            c2=(i+1<=len)?ord[substr($0,i+1,1)]:0
+            c3=(i+2<=len)?ord[substr($0,i+2,1)]:0
+            o1 = int(c1 / 4)
+            o2 = (c1 % 4) * 16 + int(c2 / 16)
+            printf "%c%c", substr(b, o1+1, 1), substr(b, o2+1, 1)
+            if(i+1<=len) {
+                o3 = (c2 % 16) * 4 + int(c3 / 64)
+                printf "%c", substr(b, o3+1, 1)
+            } else { printf "=" }
+            if(i+2<=len) {
+                o4 = c3 % 64
+                printf "%c", substr(b, o4+1, 1)
+            } else { printf "=" }
+        }
+    }'
+}
+
+# ==================== AUTH HEADER ====================
+get_auth_header() {
+    local accs_file="$(cfg_path)/accs.db"
+    local httpauth="$(cfg_get httpauth)"
+
+    [ "$httpauth" = "1" ] || return 0
+    [ -s "$accs_file" ] || return 0
+
+    local json_password first_key auth_string b64_auth
+
+    json_init
+    if json_load "$(cat "$accs_file" 2>/dev/null)"; then
+        local keys
+        json_get_keys keys
+
+        for k in $keys; do
+            first_key="$k"
+            break
+        done
+
+        if [ -n "$first_key" ]; then
+            json_get_var json_password "$first_key"
+            if [ -n "$first_key" ] && [ -n "$json_password" ]; then
+                auth_string="${first_key}:${json_password}"
+                b64_auth=$(b64_encode "$auth_string")
+                printf 'Authorization: Basic %s' "$b64_auth"
+            fi
+        fi
+    fi
+    json_cleanup
+}
+
+method_get_auth_header() {
+    local header
+    header="$(get_auth_header)"
+    json_init
+    json_add_boolean ok 1
+    json_add_string header "$header"
+    json_dump
+}
+
+method_torrserver_api() {
+    local endpoint="$1" http_method="$2" data="$3"
+    local port url result rc auth_header
+    port="$(cfg_get port)"
+    [ -n "$port" ] || port=8090
+    [ -n "$endpoint" ] || json_error "endpoint required"
+
+    case "$endpoint" in
+        /*) ;;
+        *) json_error "endpoint must start with /" ;;
+    esac
+
+    url="http://127.0.0.1:${port}${endpoint}"
+    http_method="${http_method:-GET}"
+
+    case "$http_method" in
+        GET|POST|PUT|DELETE) ;;
+        *) json_error "unsupported HTTP method" ;;
+    esac
+
+    auth_header="$(get_auth_header)"
+
+    case "$http_method" in
+        GET)
+            if [ -n "$auth_header" ]; then
+                result="$(wget -q -O - -T 5 --header="$auth_header" "$url" 2>/dev/null)"
+            else
+                result="$(wget -q -O - -T 5 "$url" 2>/dev/null)"
+            fi
+            ;;
+        POST)
+            if [ -n "$auth_header" ]; then
+                result="$(wget -q -O - -T 5 \
+                    --header="Content-Type: application/json" \
+                    --header="$auth_header" \
+                    --post-data="$data" "$url" 2>/dev/null)"
+            else
+                result="$(wget -q -O - -T 5 \
+                    --header="Content-Type: application/json" \
+                    --post-data="$data" "$url" 2>/dev/null)"
+            fi
+            ;;
+        PUT)
+            if [ -n "$auth_header" ]; then
+                result="$(wget -q -O - -T 5 --method=PUT \
+                    --header="Content-Type: application/json" \
+                    --header="$auth_header" \
+                    --post-data="$data" "$url" 2>/dev/null)"
+            else
+                result="$(wget -q -O - -T 5 --method=PUT \
+                    --header="Content-Type: application/json" \
+                    --post-data="$data" "$url" 2>/dev/null)"
+            fi
+            ;;
+        DELETE)
+            if [ -n "$auth_header" ]; then
+                result="$(wget -q -O - -T 5 --method=DELETE \
+                    --header="$auth_header" "$url" 2>/dev/null)"
+            else
+                result="$(wget -q -O - -T 5 --method=DELETE "$url" 2>/dev/null)"
+            fi
+            ;;
+    esac
+    rc=$?
+
+    json_init
+    if [ "$rc" -eq 0 ]; then
+        json_add_boolean ok 1
+        json_add_string response "$result"
+    else
+        json_add_boolean ok 0
+        json_add_string error "HTTP request failed (rc=$rc)"
+    fi
+    json_dump
+}
+
+# ==================== MAIN DISPATCH ====================
+
+case "$1" in
+    list)
+        cat <<'LISTEOF'
+{
+  "load": {},
+  "status": {},
+  "service": {"action":"string"},
+  "version_bin": {},
+  "disk": {},
+  "file_list": {},
+  "file_read": {"name":"string"},
+  "file_write": {"name":"string","content":"string"},
+  "log_read": {"name":"string","offset":"number","limit":"number"},
+  "user_info": {"user":"string"},
+  "fix_permissions": {},
+  "list_mounts": {},
+  "backup_save": {"target_dir":"string"},
+  "backup_restore": {"archive_path":"string"},
+  "active_streams": {},
+  "check_tools": {},
+  "get_auth_header": {},
+  "system_info": {},
+  "torrserver_api": {"endpoint":"string","method":"string","data":"string"}
+}
+LISTEOF
+        ;;
+
+    call)
+        method="$2"
+        ACTION=""
+        NAME=""
+        CONTENT=""
+        OFFSET=""
+        LIMIT=""
+        USER=""
+        TARGET_DIR=""
+        ARCHIVE_PATH=""
+        ENDPOINT=""
+        HTTP_METHOD=""
+        DATA=""
+        case "$method" in
+            service|file_read|file_write|log_read|log_clear|user_info|backup_save|backup_restore|torrserver_api)
+                json_input="$(cat)"
+                if [ -n "$json_input" ]; then
+                    json_load "$json_input" 2>/dev/null
+                    json_get_var ACTION action
+                    json_get_var NAME name
+                    json_get_var CONTENT content
+                    json_get_var OFFSET offset
+                    json_get_var LIMIT limit
+                    json_get_var USER user
+                    json_get_var TARGET_DIR target_dir
+                    json_get_var ARCHIVE_PATH archive_path
+                    json_get_var ENDPOINT endpoint
+                    json_get_var HTTP_METHOD method
+                    json_get_var DATA data
+                fi
+            ;;
+        esac
+        case "$method" in
+            load)            method_load ;;
+            status)          method_status ;;
+            service)         method_service "$ACTION" ;;
+            version_bin)     method_version_bin ;;
+            disk)            method_disk ;;
+            file_list)       method_file_list ;;
+            file_read)       method_file_read "$NAME" ;;
+            file_write)      method_file_write "$NAME" "$CONTENT" ;;
+            log_read)        method_log_read "$NAME" "$OFFSET" "$LIMIT" ;;
+            user_info)       method_user_info "$USER" ;;
+            fix_permissions) method_fix_permissions ;;
+            list_mounts)     method_list_mounts ;;
+            backup_save)     method_backup_save "$TARGET_DIR" ;;
+            backup_restore)  method_backup_restore "$ARCHIVE_PATH" ;;
+            active_streams)  method_active_streams ;;
+            check_tools)     method_check_tools ;;
+            get_auth_header) method_get_auth_header ;;
+            system_info)     method_system_info ;;
+            torrserver_api)  method_torrserver_api "$ENDPOINT" "$HTTP_METHOD" "$DATA" ;;
+            *) json_error "unknown method" ;;
+        esac
+        ;;
+
+    *)
+        exit 1
+        ;;
+esac
