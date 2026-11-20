@@ -247,14 +247,14 @@ jobs:
           ./scripts/feeds install -a
 
           cp -r ../package/torrserver package/
-          if [ "$BUILD_LUCI" = "true" ]; then
+          if [ "$BUILD_LUCI" = "true" ] && [ "${{ matrix.luci }}" = "1" ]; then
             cp -r ../package/luci-app-torrserver package/
           fi
 
           {
             echo "CONFIG_PACKAGE_torrserver=m"
             echo "CONFIG_PACKAGE_torrserver-upx=m"
-            if [ "$BUILD_LUCI" = "true" ]; then
+            if [ "$BUILD_LUCI" = "true" ] && [ "${{ matrix.luci }}" = "1" ]; then
               echo "CONFIG_PACKAGE_luci-app-torrserver=m"
             fi
           } >> .config
@@ -262,7 +262,7 @@ jobs:
           make defconfig
 
           make -j"$(nproc)" package/torrserver/compile V=s
-          if [ "$BUILD_LUCI" = "true" ]; then
+          if [ "$BUILD_LUCI" = "true" ] && [ "${{ matrix.luci }}" = "1" ]; then
             make -j"$(nproc)" package/luci-app-torrserver/compile V=s
           fi
 
