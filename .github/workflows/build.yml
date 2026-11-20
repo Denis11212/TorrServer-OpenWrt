@@ -275,7 +275,12 @@ jobs:
             cd ../pkg-out
             for f in *; do
               case "$f" in
+                luci-app-torrserver*|luci-i18n-torrserver*)
+                  # LuCI-пакеты универсальны (arch=all), помечаем явно
+                  mv -v "$f" "${f%.*}-owrt${{ matrix.owrt }}-all.${f##*.}"
+                  ;;
                 *.apk|*_all.ipk)
+                  # Архитектурные пакеты получают суффикс с архитектурой сборки
                   mv -v "$f" "${f%.*}-owrt${{ matrix.owrt }}-${{ matrix.arch }}.${f##*.}"
                   ;;
               esac
