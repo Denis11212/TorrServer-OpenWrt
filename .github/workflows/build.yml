@@ -118,7 +118,7 @@ jobs:
             echo "ts_tag=$TAG"
             echo "pkg_version=$VER"
             echo "pkg_release=$REL"
-            echo "build_luci=${IN_LUCI}"
+            echo "build_luci=${IN_LUCI:-true}"
           } >> "$GITHUB_OUTPUT"
           echo "TorrServer: $TAG  ->  пакет ${VER}-r${REL}  (luci=${IN_LUCI})"
 
@@ -134,9 +134,13 @@ jobs:
             *)    VERSIONS="$OWRT_INPUT" ;;
           esac
           for v in $VERSIONS; do
-            case "$v" in
-              *[!0-9a-z.-]*) echo "::error::Подозрительная версия OpenWrt: $v"; exit 1 ;;
-            esac
+            luci_job=1
+            for t in $TARGETS; do
+              [ "$first" -eq 1 ] || JSON="$JSON,"
+              first=0
+              JSON="$JSON{\"owrt\":\"$v\",\"target\":\"${t%%:*}\",\"arch\":\"${t##*:}\",\"luci\":\"$luci_job\"}"
+              luci_job=0
+            done
           done
 
           # Полный список архитектур. Метки должны совпадать со вторым элементом пары!
@@ -269,6 +273,16 @@ jobs:
                -o -name 'luci-app-torrserver[_-]*' \
                -o -name 'luci-i18n-torrserver-*' \) \
             -exec cp -v {} ../pkg-out/ \;
+          (
+            cd ../pkg-out
+            for f in *; do
+              case "$f" in
+                *.apk|*_all.ipk)
+                  mv -v "$f" "${f%.*}-owrt${{ matrix.owrt }}-${{ matrix.arch }}.${f##*.}"
+                  ;;
+              esac
+            done
+          )
           ls -lh ../pkg-out
 
       - name: Upload artifacts
