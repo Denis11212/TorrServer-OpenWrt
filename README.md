@@ -17,7 +17,7 @@
 - **Экономия места.** Для устройств с малым объёмом памяти доступна UPX-версия бинарника — пережатая утилитой UPX для минимизации занимаемого места.
 - **Полная поддержка тем**. Любые темы, которые написаны по стандартам OpenWrt будут корректно менять все возможные элементы интерфейса.
 
-# Скриншоты
+# Как выглядит интерфейс в LuCI
 
 <img width="1108" height="1185" alt="Снимок экрана 2026-11-20 174103" src="https://github.com/user-attachments/assets/3df82f3e-e337-40dd-83ae-2e4547e8c1bf" /><img width="1092" height="1240" alt="Снимок экрана 2026-11-20 173935" src="https://github.com/user-attachments/assets/383f16f9-36fe-4d2f-8ef4-81bddce8811a" />
 <img width="1093" height="1243" alt="Снимок экрана 2026-11-20 173855" src="https://github.com/user-attachments/assets/d502d578-69ca-4dfd-a7fe-5aedc1e2b74e" />
