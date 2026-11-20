@@ -134,13 +134,9 @@ jobs:
             *)    VERSIONS="$OWRT_INPUT" ;;
           esac
           for v in $VERSIONS; do
-            luci_job=1
-            for t in $TARGETS; do
-              [ "$first" -eq 1 ] || JSON="$JSON,"
-              first=0
-              JSON="$JSON{\"owrt\":\"$v\",\"target\":\"${t%%:*}\",\"arch\":\"${t##*:}\",\"luci\":\"$luci_job\"}"
-              luci_job=0
-            done
+            case "$v" in
+              *[!0-9a-z.-]*) echo "::error::Подозрительная версия OpenWrt: $v"; exit 1 ;;
+            esac
           done
 
           # Полный список архитектур. Метки должны совпадать со вторым элементом пары!
@@ -165,10 +161,12 @@ jobs:
           JSON='{"include":['
           first=1
           for v in $VERSIONS; do
+            luci_job=1
             for t in $TARGETS; do
               [ "$first" -eq 1 ] || JSON="$JSON,"
               first=0
-              JSON="$JSON{\"owrt\":\"$v\",\"target\":\"${t%%:*}\",\"arch\":\"${t##*:}\"}"
+              JSON="$JSON{\"owrt\":\"$v\",\"target\":\"${t%%:*}\",\"arch\":\"${t##*:}\",\"luci\":\"$luci_job\"}"
+              luci_job=0
             done
           done
           JSON="$JSON]}"
